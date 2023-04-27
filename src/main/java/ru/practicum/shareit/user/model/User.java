@@ -1,7 +1,6 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.user.model;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
@@ -10,13 +9,11 @@ import lombok.experimental.FieldDefaults;
  */
 
 @Data
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ItemDto {
+public class User {
 
-    Integer itemId;
+    Integer userId;
     String name;
-    String description;
-    Boolean isAvailable;
+    String email;
 
 }
