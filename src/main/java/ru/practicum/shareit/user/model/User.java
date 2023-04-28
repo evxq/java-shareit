@@ -15,9 +15,9 @@ import javax.validation.constraints.NotNull;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
 
-    Integer userId;
+    Integer id;
     String name;
-    @NotNull
+    @NotNull(message = "e-mail должен быть заполнен")
     @Email(message = "e-mail некорректен")
     String email;
 

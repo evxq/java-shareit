@@ -13,23 +13,26 @@ import java.util.List;
 @Repository
 public class UserDaoImpl implements UserDao {
 
+    private int countId;
     private final List<User> userStorage = new ArrayList<>();
 
     @Override
     public User createUser(User user) {
         checkDuplicateEmail(user);
-        user.setUserId(getId());
+        user.setId(++countId);
         userStorage.add(user);
-        log.info("Создан пользователь id={}", user.getUserId());
+        log.info("Создан пользователь id={}", user.getId());
         return user;
     }
 
     @Override
     public User updateUser(User user) {
-        checkDuplicateEmail(user);
+        if (user.getEmail() != null) {
+            checkDuplicateEmail(user);
+        }
         User updUser = null;
         for (User existedUser: userStorage) {
-            if (user.getUserId().equals(existedUser.getUserId())) {
+            if (user.getId().equals(existedUser.getId())) {
                 if (user.getName() != null) {
                     existedUser.setName(user.getName());
                 }
@@ -43,7 +46,7 @@ public class UserDaoImpl implements UserDao {
                 throw new NotFoundException("Такой пользователь не найден");
             }
         }
-        log.info("Обновлен пользователь id={}", user.getUserId());
+        log.info("Обновлен пользователь id={}", user.getId());
         return updUser;
     }
 
@@ -51,12 +54,13 @@ public class UserDaoImpl implements UserDao {
     public User getUserDyId(Integer userId) {
         User user = null;
         for (User existedUser: userStorage) {
-            if (userId.equals(existedUser.getUserId())) {
+            if (userId.equals(existedUser.getId())) {
                 user = existedUser;
-            } else {
-                log.warn("Пользователь не найден");
-                throw new NotFoundException("Такой пользователь не найден");
             }
+        }
+        if (user == null) {
+            log.warn("Пользователь не найден");
+            throw new NotFoundException("Такой пользователь не найден");
         }
         log.info("Вызван пользователь id ={}", userId);
         return user;
@@ -70,24 +74,30 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void deleteUser(Integer userId) {
+        User delUser = null;
         for (User existedUser: userStorage) {
-            if (userId.equals(existedUser.getUserId())) {
-                userStorage.remove(existedUser);
-                log.info("Удален пользователь id={}", userId);
-            } else {
-                log.warn("Пользователь не найден");
-                throw new NotFoundException("Такой пользователь не найден");
+            if (userId.equals(existedUser.getId())) {
+                delUser = existedUser;
             }
         }
+        if (delUser == null) {
+            log.warn("Пользователь не найден");
+            throw new NotFoundException("Такой пользователь не найден");
+        }
+        userStorage.remove(delUser);
+        log.info("Удален пользователь id={}", userId);
     }
 
-    private int getId() {
-        int lastId = userStorage.stream().mapToInt(User::getUserId).max().orElse(0);
+    /*private int getId() {
+        int lastId = userStorage.stream().mapToInt(User::getId).max().orElse(0);
         return lastId + 1;
-    }
+    }*/
 
     private void checkDuplicateEmail(User user) {
         for (User existedUser: userStorage) {
+            if (user.getEmail().equals(existedUser.getEmail()) && user.getId().equals(existedUser.getId())) {
+                break;
+            }
             if (user.getEmail().equals(existedUser.getEmail())) {
                 log.warn("e-mail уже используется");
                 throw new UserAlreadyExistException("Такой e-mail уже используется");

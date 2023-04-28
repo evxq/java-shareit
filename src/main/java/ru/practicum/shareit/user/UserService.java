@@ -18,7 +18,7 @@ public class UserService {
     }
 
     public User updateUser(User user, Integer userId) {
-        user.setUserId(userId);
+        user.setId(userId);
         return userDao.updateUser(user);
     }
 
