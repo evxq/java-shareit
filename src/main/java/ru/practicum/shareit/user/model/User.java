@@ -4,6 +4,9 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+
 /**
  * TODO Sprint add-controllers.
  */
@@ -14,6 +17,8 @@ public class User {
 
     Integer userId;
     String name;
+    @NotNull
+    @Email(message = "e-mail некорректен")
     String email;
 
 }
