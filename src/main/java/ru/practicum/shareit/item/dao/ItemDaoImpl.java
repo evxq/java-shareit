@@ -4,10 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Slf4j
 @Repository
@@ -28,7 +28,7 @@ public class ItemDaoImpl implements ItemDao {
     @Override
     public Item updateItem(Integer userId, Item item) {
         Item updItem = null;
-        for (Item existedItem: itemStorage) {
+        for (Item existedItem : itemStorage) {
             if (item.getId().equals(existedItem.getId())) {
                 if (userId != item.getOwner().getId()) {
                     log.warn("Некорректный пользователь");
@@ -47,7 +47,7 @@ public class ItemDaoImpl implements ItemDao {
                 break;
             } else {
                 log.warn("Вещь не найдена");
-                throw new NotFoundException("Такой вещь не найдена");
+                throw new NotFoundException("Такая вещь не найдена");
             }
         }
         log.info("Обновлена вещь id={}", item.getId());
@@ -56,17 +56,47 @@ public class ItemDaoImpl implements ItemDao {
     }
 
     @Override
-    public Item getItemDyId(Integer itemId) {
-        return null;
+    public Item getItemById(Integer itemId) {
+        Item item = null;
+        for (Item existedItem : itemStorage) {
+            if (itemId.equals(existedItem.getId())) {
+                item = existedItem;
+            }
+        }
+        if (item == null) {
+            log.warn("Вещь не найдена");
+            throw new NotFoundException("Такая вещь не найдена");
+        }
+        log.info("Вызвана вещь id ={}", itemId);
+
+        return item;
     }
 
     @Override
-    public List<Item> getItemsForUser() {
-        return null;
+    public List<Item> getItemsForUser(Integer userId) {
+        List<Item> userItems = new ArrayList<>();
+        for (Item existedItem : itemStorage) {
+            if (userId.equals(existedItem.getOwner().getId())) {
+                userItems.add(existedItem);
+            }
+        }
+        log.info("Вызван список вещей для пользователя id ={}", userId);
+
+        return userItems;
     }
 
     @Override
     public List<Item> searchItemByText(String text) {
-        return null;
+        List<Item> matchItems = new ArrayList<>();
+        for (Item existedItem : itemStorage) {
+            if ((existedItem.getName().toLowerCase().contains(text)
+                    || existedItem.getDescription().toLowerCase().contains(text))
+                    && existedItem.getAvailable()) {
+                matchItems.add(existedItem);
+            }
+        }
+        log.info("Вызван список вещей по строке поиска \"{}\"", text);
+
+        return matchItems;
     }
 }

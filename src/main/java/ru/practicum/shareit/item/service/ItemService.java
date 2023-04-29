@@ -9,7 +9,7 @@ public interface ItemService {
 
     Item addItem(Integer userId, ItemDto itemDto);
 
-    Item updateItem(Integer userId, ItemDto itemDto);
+    Item updateItem(Integer userId, Integer itemId, ItemDto itemDto);
 
     Item getItemById(Integer itemId);
 

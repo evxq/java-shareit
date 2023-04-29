@@ -20,29 +20,32 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item addItem(Integer userId, ItemDto itemDto) {
         Item item = ItemMapper.toItem(itemDto);
-        item.setOwner(userDao.getUserDyId(userId));
+        item.setOwner(userDao.getUserById(userId));
 
         return itemDao.addItem(item);
     }
 
     @Override
-    public Item updateItem(Integer userId, ItemDto itemDto) {
+    public Item updateItem(Integer userId, Integer itemId, ItemDto itemDto) {
+        if (itemDto.getItemDtoId() == null) {
+            itemDto.setItemDtoId(itemId);
+        }
         return itemDao.updateItem(userId, ItemMapper.toItem(itemDto));
     }
 
     @Override
     public Item getItemById(Integer itemId) {
-        return null;
+        return itemDao.getItemById(itemId);
     }
 
     @Override
     public List<Item> getItemsForUser(Integer userId) {
-        return null;
+        return itemDao.getItemsForUser(userId);
     }
 
     @Override
     public List<Item> searchItemByText(String text) {
-        return null;
+        return itemDao.searchItemByText(text.toLowerCase());
     }
 
 }

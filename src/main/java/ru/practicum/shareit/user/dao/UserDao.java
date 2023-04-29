@@ -10,7 +10,7 @@ public interface UserDao {
 
     User updateUser(User user);
 
-    User getUserDyId(Integer userId);
+    User getUserById(Integer userId);
 
     List<User> getAllUsers();
 

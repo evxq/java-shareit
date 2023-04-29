@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemDto {
 
-    Integer itemId;
+    Integer itemDtoId;
     @NotBlank(message = "Название вещи не может быть пустым")
     String name;
     @NotNull(message = "Не указано описание вещи")

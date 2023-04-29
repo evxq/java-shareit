@@ -23,7 +23,7 @@ public class UserService {
     }
 
     public User getUserDyId(Integer userId) {
-        return userDao.getUserDyId(userId);
+        return userDao.getUserById(userId);
     }
 
     public List<User> getAllUsers() {

@@ -53,7 +53,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User getUserDyId(Integer userId) {
+    public User getUserById(Integer userId) {
         User user = null;
         for (User existedUser: userStorage) {
             if (userId.equals(existedUser.getId())) {
