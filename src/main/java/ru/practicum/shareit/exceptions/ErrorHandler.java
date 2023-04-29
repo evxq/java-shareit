@@ -15,6 +15,12 @@ public class ErrorHandler {
         return new ErrorResponse(v.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)                                         // 400
+    public ErrorResponse handleValidationError(final ValidationException v) {
+        return new ErrorResponse(v.getMessage());
+    }
+
     @ExceptionHandler                                                               // 404
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundError(final NotFoundException n) {

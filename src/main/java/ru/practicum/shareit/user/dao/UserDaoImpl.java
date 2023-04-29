@@ -32,7 +32,7 @@ public class UserDaoImpl implements UserDao {
             checkDuplicateEmail(user);
         }
         User updUser = null;
-        for (User existedUser: userStorage) {
+        for (User existedUser : userStorage) {
             if (user.getId().equals(existedUser.getId())) {
                 if (user.getName() != null) {
                     existedUser.setName(user.getName());
@@ -55,7 +55,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User getUserById(Integer userId) {
         User user = null;
-        for (User existedUser: userStorage) {
+        for (User existedUser : userStorage) {
             if (userId.equals(existedUser.getId())) {
                 user = existedUser;
             }
@@ -79,7 +79,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public void deleteUser(Integer userId) {
         User delUser = null;
-        for (User existedUser: userStorage) {
+        for (User existedUser : userStorage) {
             if (userId.equals(existedUser.getId())) {
                 delUser = existedUser;
             }
@@ -92,13 +92,8 @@ public class UserDaoImpl implements UserDao {
         log.info("Удален пользователь id={}", userId);
     }
 
-    /*private int getId() {
-        int lastId = userStorage.stream().mapToInt(User::getId).max().orElse(0);
-        return lastId + 1;
-    }*/
-
     private void checkDuplicateEmail(User user) {
-        for (User existedUser: userStorage) {
+        for (User existedUser : userStorage) {
             if (user.getEmail().equals(existedUser.getEmail()) && user.getId().equals(existedUser.getId())) {
                 break;
             }
