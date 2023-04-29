@@ -22,6 +22,7 @@ public class UserDaoImpl implements UserDao {
         user.setId(++countId);
         userStorage.add(user);
         log.info("Создан пользователь id={}", user.getId());
+
         return user;
     }
 
@@ -47,6 +48,7 @@ public class UserDaoImpl implements UserDao {
             }
         }
         log.info("Обновлен пользователь id={}", user.getId());
+
         return updUser;
     }
 
@@ -63,12 +65,14 @@ public class UserDaoImpl implements UserDao {
             throw new NotFoundException("Такой пользователь не найден");
         }
         log.info("Вызван пользователь id ={}", userId);
+
         return user;
     }
 
     @Override
     public List<User> getAllUsers() {
         log.info("Вызван список всех пользователей");
+
         return userStorage;
     }
 
