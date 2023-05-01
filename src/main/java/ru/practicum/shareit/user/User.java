@@ -1,8 +1,6 @@
-package ru.practicum.shareit.user.model;
+package ru.practicum.shareit.user;
 
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
@@ -12,13 +10,12 @@ import javax.validation.constraints.NotNull;
  */
 
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
 
-    Integer id;
-    String name;
+    private Integer id;
+    private String name;
     @NotNull(message = "e-mail должен быть заполнен")
     @Email(message = "e-mail некорректен")
-    String email;
+    private String email;
 
 }

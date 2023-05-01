@@ -1,26 +1,27 @@
-package ru.practicum.shareit.user.dao;
+package ru.practicum.shareit.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.UserAlreadyExistException;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Repository
 public class UserDaoImpl implements UserDao {
 
     private int countId;
-    private final List<User> userStorage = new ArrayList<>();
+    private final Map<Integer, User> userStorage = new HashMap<>();
 
     @Override
     public User createUser(User user) {
         checkDuplicateEmail(user);
         user.setId(++countId);
-        userStorage.add(user);
+        userStorage.put(user.getId(), user);
         log.info("Создан пользователь id={}", user.getId());
 
         return user;
@@ -32,7 +33,7 @@ public class UserDaoImpl implements UserDao {
             checkDuplicateEmail(user);
         }
         User updUser = null;
-        for (User existedUser : userStorage) {
+        for (User existedUser : userStorage.values()) {
             if (user.getId().equals(existedUser.getId())) {
                 if (user.getName() != null) {
                     existedUser.setName(user.getName());
@@ -55,7 +56,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User getUserById(Integer userId) {
         User user = null;
-        for (User existedUser : userStorage) {
+        for (User existedUser : userStorage.values()) {
             if (userId.equals(existedUser.getId())) {
                 user = existedUser;
             }
@@ -64,7 +65,7 @@ public class UserDaoImpl implements UserDao {
             log.warn("Пользователь не найден");
             throw new NotFoundException("Такой пользователь не найден");
         }
-        log.info("Вызван пользователь id ={}", userId);
+        log.info("Вызван пользователь id={}", userId);
 
         return user;
     }
@@ -73,13 +74,13 @@ public class UserDaoImpl implements UserDao {
     public List<User> getAllUsers() {
         log.info("Вызван список всех пользователей");
 
-        return userStorage;
+        return new ArrayList<>(userStorage.values());
     }
 
     @Override
     public void deleteUser(Integer userId) {
         User delUser = null;
-        for (User existedUser : userStorage) {
+        for (User existedUser : userStorage.values()) {
             if (userId.equals(existedUser.getId())) {
                 delUser = existedUser;
             }
@@ -88,12 +89,12 @@ public class UserDaoImpl implements UserDao {
             log.warn("Пользователь не найден");
             throw new NotFoundException("Такой пользователь не найден");
         }
-        userStorage.remove(delUser);
+        userStorage.remove(delUser.getId());
         log.info("Удален пользователь id={}", userId);
     }
 
     private void checkDuplicateEmail(User user) {
-        for (User existedUser : userStorage) {
+        for (User existedUser : userStorage.values()) {
             if (user.getEmail().equals(existedUser.getEmail()) && user.getId().equals(existedUser.getId())) {
                 break;
             }
