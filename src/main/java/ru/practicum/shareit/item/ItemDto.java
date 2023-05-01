@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.item;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,15 +14,15 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
+//@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemDto {
 
-    Integer itemDtoId;
+    private Integer itemDtoId;
     @NotBlank(message = "Название вещи не может быть пустым")
-    String name;
+    private String name;
     @NotNull(message = "Не указано описание вещи")
-    String description;
+    private String description;
     @NotNull(message = "Не указана доступность вещи")
-    Boolean available;
+    private Boolean available;
 
 }

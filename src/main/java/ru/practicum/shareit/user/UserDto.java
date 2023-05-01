@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user.dto;
+package ru.practicum.shareit.user;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,13 +10,13 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
+//@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDto {
 
-    Integer userId;
-    String name;
+    private Integer userId;
+    private String name;
     @NotNull(message = "e-mail должен быть заполнен")
     @Email(message = "e-mail некорректен")
-    String email;
+    private String email;
 
 }

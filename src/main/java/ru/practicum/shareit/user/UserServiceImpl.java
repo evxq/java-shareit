@@ -1,9 +1,7 @@
-package ru.practicum.shareit.user.service;
+package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.dao.UserDao;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 

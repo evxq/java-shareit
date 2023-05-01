@@ -1,30 +1,23 @@
-package ru.practicum.shareit.item.dao;
+package ru.practicum.shareit.item;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.ValidationException;
-import ru.practicum.shareit.item.model.Item;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Repository
 public class ItemDaoImpl implements ItemDao {
 
     private int countId;
-    private final List<Item> itemStorage = new ArrayList<>();
+    private final Map<Integer, Item> itemStorage = new HashMap<>();
 
     @Override
     public Item addItem(Item item) {
-        if (item.getName() == null || item.getName().isEmpty() || item.getDescription() == null || item.getAvailable() == null) {
-            log.warn("Недостаточно данных для создания вещи");
-            throw new ValidationException("Недостаточно данных для создания вещи");
-        }
         item.setId(++countId);
-        itemStorage.add(item);
+        itemStorage.put(item.getId(), item);
+
         log.info("Создана вещь id={}", item.getId());
 
         return item;
@@ -33,7 +26,7 @@ public class ItemDaoImpl implements ItemDao {
     @Override
     public Item updateItem(Integer userId, Item item) {
         Item updItem = null;
-        for (Item existedItem : itemStorage) {
+        for (Item existedItem : itemStorage.values()) {
             if (item.getId().equals(existedItem.getId())) {
                 if (!Objects.equals(userId, existedItem.getOwner().getId())) {
                     log.warn("Некорректный пользователь");
@@ -64,7 +57,7 @@ public class ItemDaoImpl implements ItemDao {
     @Override
     public Item getItemById(Integer itemId) {
         Item item = null;
-        for (Item existedItem : itemStorage) {
+        for (Item existedItem : itemStorage.values()) {
             if (itemId.equals(existedItem.getId())) {
                 item = existedItem;
             }
@@ -81,7 +74,7 @@ public class ItemDaoImpl implements ItemDao {
     @Override
     public List<Item> getItemsForUser(Integer userId) {
         List<Item> userItems = new ArrayList<>();
-        for (Item existedItem : itemStorage) {
+        for (Item existedItem : itemStorage.values()) {
             if (userId.equals(existedItem.getOwner().getId())) {
                 userItems.add(existedItem);
             }
@@ -94,10 +87,7 @@ public class ItemDaoImpl implements ItemDao {
     @Override
     public List<Item> searchItemByText(String text) {
         List<Item> matchItems = new ArrayList<>();
-        if (text.isEmpty() || text.isBlank()) {
-            return matchItems;
-        }
-        for (Item existedItem : itemStorage) {
+        for (Item existedItem : itemStorage.values()) {
             if ((existedItem.getName().toLowerCase().contains(text)
                     || existedItem.getDescription().toLowerCase().contains(text))
                     && existedItem.getAvailable()) {

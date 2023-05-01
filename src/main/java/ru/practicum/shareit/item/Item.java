@@ -1,10 +1,8 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.item;
 
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
-import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.User;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -15,16 +13,16 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Item {
 
-    Integer id;
+    private Integer id;
     @NotBlank(message = "Название вещи не может быть пустым")
-    String name;
+    private String name;
     @NotNull(message = "Не указано описание вещи")
-    String description;
-    User owner;
+    private String description;
+    private User owner;
     @NotNull(message = "Не указана доступность вещи")
-    Boolean available;
+    private Boolean available;
+    private Integer requestId;
 
 }
