@@ -2,7 +2,7 @@ package ru.practicum.shareit.item;
 
 import java.util.List;
 
-public interface ItemDao {
+/*public interface ItemDao {
 
     Item addItem(Item item);
 
@@ -14,4 +14,4 @@ public interface ItemDao {
 
     List<Item> searchItemByText(String text);
 
-}
+}*/

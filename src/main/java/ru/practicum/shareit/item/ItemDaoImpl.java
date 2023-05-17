@@ -6,7 +6,7 @@ import ru.practicum.shareit.exceptions.NotFoundException;
 
 import java.util.*;
 
-@Slf4j
+/*@Slf4j
 @Repository
 public class ItemDaoImpl implements ItemDao {
 
@@ -99,4 +99,4 @@ public class ItemDaoImpl implements ItemDao {
         return matchItems;
     }
 
-}
+}*/

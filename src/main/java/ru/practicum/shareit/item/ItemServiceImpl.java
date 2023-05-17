@@ -16,6 +16,7 @@ public class ItemServiceImpl implements ItemService {
 
     private final ItemDao itemDao;
     private final UserDao userDao;
+    private final ItemRepository itemRepository;
 
     @Override
     public Item addItem(Integer userId, ItemDto itemDto) {
@@ -26,7 +27,8 @@ public class ItemServiceImpl implements ItemService {
         }
         item.setOwner(userDao.getUserById(userId));
 
-        return itemDao.addItem(item);
+//        return itemDao.addItem(item);
+        return itemRepository.save(item);
     }
 
     @Override
@@ -34,17 +36,20 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getItemDtoId() == null) {
             itemDto.setItemDtoId(itemId);
         }
-        return itemDao.updateItem(userId, ItemMapper.toItem(itemDto));
+//        return itemDao.updateItem(userId, ItemMapper.toItem(itemDto));
+        return itemRepository.save(ItemMapper.toItem(itemDto));
     }
 
     @Override
     public Item getItemById(Integer itemId) {
-        return itemDao.getItemById(itemId);
+//        return itemDao.getItemById(itemId);
+        return itemRepository.getReferenceById(itemId);
     }
 
     @Override
     public List<Item> getItemsForUser(Integer userId) {
-        return itemDao.getItemsForUser(userId);
+//        return itemDao.getItemsForUser(userId);
+        return itemRepository.findAllByUserId(userId);
     }
 
     @Override
@@ -53,7 +58,8 @@ public class ItemServiceImpl implements ItemService {
             log.warn("Вызван поиск вещей для пустой строки");
             return new ArrayList<>();
         }
-        return itemDao.searchItemByText(text.toLowerCase());
+//        return itemDao.searchItemByText(text.toLowerCase());
+        return itemRepository.findAllByTextContaining(text.toLowerCase());
     }
 
 }
