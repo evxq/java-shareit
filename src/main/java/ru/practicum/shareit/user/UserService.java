@@ -1,7 +1,5 @@
 package ru.practicum.shareit.user;
 
-import ru.practicum.shareit.user.User;
-
 import java.util.List;
 
 public interface UserService {
@@ -10,7 +8,7 @@ public interface UserService {
 
     User updateUser(User user, Integer userId);
 
-    User getUserDyId(Integer userId);
+    User getUserById(Integer userId);
 
     List<User> getAllUsers();
 

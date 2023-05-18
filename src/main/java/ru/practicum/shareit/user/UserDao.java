@@ -2,7 +2,7 @@ package ru.practicum.shareit.user;
 
 import java.util.List;
 
-public interface UserDao {
+/*public interface UserDao {
 
     User createUser(User user);
 
@@ -14,4 +14,4 @@ public interface UserDao {
 
     void deleteUser(Integer userId);
 
-}
+}*/

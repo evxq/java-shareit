@@ -17,7 +17,7 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "ru.practicum")
+@EnableJpaRepositories(basePackages = "ru.practicum.shareit")
 @PropertySource(value = "classpath:application.properties")
 public class PersistenceConfig {
 
@@ -29,8 +29,8 @@ public class PersistenceConfig {
 
     private Properties hibernateProperties() {
         Properties properties = new Properties();
-        properties.put("hibernate.dialect", environment.getRequiredProperty("hibernate.dialect"));
-        properties.put("hibernate.show_sql", environment.getRequiredProperty("hibernate.show_sql"));
+        properties.put("spring.jpa.properties.hibernate.dialect", environment.getRequiredProperty("spring.jpa.properties.hibernate.dialect"));
+        properties.put("spring.jpa.properties.hibernate.format_sql", environment.getRequiredProperty("spring.jpa.properties.hibernate.format_sql"));
         properties.put("javax.persistence.schema-generation.database.action", environment.getProperty("javax.persistence.schema-generation.database.action", "none"));
         properties.put("javax.persistence.schema-generation.create-script-source", environment.getProperty("javax.persistence.schema-generation.create-script-source"));
 
@@ -52,7 +52,7 @@ public class PersistenceConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(DataSource dataSource) {
         final LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactory.setDataSource(dataSource);
-        entityManagerFactory.setPackagesToScan("ru.practicum");
+        entityManagerFactory.setPackagesToScan("ru.practicum.shareit");
 
         final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         entityManagerFactory.setJpaVendorAdapter(vendorAdapter);
