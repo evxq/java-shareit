@@ -29,7 +29,7 @@ public class Item {
     private String name;                                        // @Column не указан, т.к названия поля и колонки совпадают
 
     @NotNull(message = "Не указано описание вещи")
-    private String description;                                 // @Column не указан
+    private String description;                                 // @Column не указан, т.к названия поля и колонки совпадают
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")

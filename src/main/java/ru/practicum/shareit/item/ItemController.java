@@ -17,12 +17,15 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") Integer userId, @RequestBody ItemDto itemDto) {
+    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
+                           @RequestBody ItemDto itemDto) {
         return itemService.addItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Integer userId, @PathVariable Integer itemId, @RequestBody ItemDto itemDto) {
+    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
+                              @PathVariable Integer itemId,
+                              @RequestBody ItemDto itemDto) {
         return itemService.updateItem(userId, itemId, itemDto);
     }
 
@@ -39,6 +42,13 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> searchItemByText(@RequestParam String text) {
         return itemService.searchItemByText(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Integer userId,
+                                 @PathVariable Integer itemId,
+                                 @RequestBody CommentDto commentDto) {
+        return itemService.addComment(userId, itemId, commentDto);
     }
 
 }

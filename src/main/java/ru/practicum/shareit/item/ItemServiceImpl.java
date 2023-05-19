@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingDto;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
@@ -19,11 +20,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
-    //    private final ItemDao itemDao;
+//    private final ItemDao itemDao;
 //    private final UserDao userDao;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     public ItemDto addItem(Integer userId, ItemDto itemDto) {
@@ -35,7 +37,6 @@ public class ItemServiceImpl implements ItemService {
 //        item.setOwner(userDao.getUserById(userId));
         item.setOwner(userRepository.getReferenceById(userId));
         log.info("Создана вещь id={}", item.getId());
-
 //        return itemDao.addItem(item);
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
@@ -46,7 +47,6 @@ public class ItemServiceImpl implements ItemService {
             itemDto.setId(itemId);
         }
         log.info("Обновлена вещь id={}", itemId);
-
 //        return itemDao.updateItem(userId, ItemMapper.toItem(itemDto));
         return ItemMapper.toItemDto(itemRepository.save(ItemMapper.toItem(itemDto)));
     }
@@ -54,7 +54,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDtoBooking getItemById(Integer itemId) {
         log.info("Вызвана вещь id ={}", itemId);
-
 //        return itemDao.getItemById(itemId);
         Item item = itemRepository.getReferenceById(itemId);
         /*ItemDtoBooking itemDtoBooking = ItemMapper.toItemDtoBooking(itemRepository.getReferenceById(itemId));
@@ -90,6 +89,11 @@ public class ItemServiceImpl implements ItemService {
         BookingDto nextBookingDto = BookingMapper.toBookingDto(bookingRepository.findNextBookingForItem(item.getId(), LocalDateTime.now()));
         itemDtoBooking.setLastBooking(lastBookingDto);
         itemDtoBooking.setNextBooking(nextBookingDto);
+        List<CommentDto> commentDtoList = commentRepository.findAllByItemId(item.getId())
+                .stream()
+                .map(CommentMapper::toCommentDto)
+                .collect(Collectors.toList());
+        itemDtoBooking.setComments(commentDtoList);
 
         return itemDtoBooking;
     }
@@ -101,12 +105,26 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
         log.info("Вызван список вещей по строке поиска \"{}\"", text);
-
 //        return itemDao.searchItemByText(text.toLowerCase());
         return itemRepository.findAllByTextContaining(text.toLowerCase())
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public CommentDto addComment(Integer userId, Integer itemId, CommentDto commentDto) {
+        List<Booking> booking = bookingRepository.findBookingByUserAndItem(itemId, userId, LocalDateTime.now());
+        if (booking.isEmpty()) {
+            log.info("Пользователь не может оставить комментарий для объекта, который не использовал");
+            throw new ValidationException("Пользователь не может оставить комментарий для объекта, который не использовал");
+        } else {
+            Comment comment = CommentMapper.toComment(commentDto);
+            comment.setItem(booking.get(0).getItem());
+            comment.setAuthor(booking.get(0).getBooker());
+
+            return CommentMapper.toCommentDto(commentRepository.save(comment));
+        }
     }
 
 }

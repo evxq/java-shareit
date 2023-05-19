@@ -59,4 +59,11 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     @Query(BOOKING_FOR_ITEM + "AND bk.start > 2? ORDER BY bk.start ASC LIMIT 1")
     Booking findNextBookingForItem(Integer itemId, LocalDateTime start);
 
+    @Query("SELECT bk " +
+            "FROM Booking bk " +
+            "JOIN bk.item it" +
+            "JOIN bk.booker us" +
+            "WHERE it.id = 1? AND us.id = 2? AND bk.end < 3?")
+    List<Booking> findBookingByUserAndItem(Integer itemId, Integer userId, LocalDateTime start);
+
 }
