@@ -77,6 +77,9 @@ public class BookingServiceImpl implements BookingService {
         checkUserForExist(userId);
         List<Booking> userBookings;
         switch (state) {
+            case "ALL":
+                userBookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
+                break;
             case "CURRENT":
                 userBookings = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now());
                 break;
@@ -93,7 +96,8 @@ public class BookingServiceImpl implements BookingService {
                 userBookings = bookingRepository.findAllByBookerIdAndStatusIsRejectedOrderByStartDesc(userId);
                 break;
             default:
-                userBookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
+                log.warn("Некорректный статус бронирования");
+                throw new ValidationException("Некорректный статус бронирования");
         }
         log.info("Получен список бронирований для пользователя id={} по условию {}", userId, state);
 
@@ -105,6 +109,9 @@ public class BookingServiceImpl implements BookingService {
         checkUserForExist(userId);
         List<Booking> ownerBookings;
         switch (state) {
+            case "ALL":
+                ownerBookings = bookingRepository.getBookingsForOwner(userId);
+                break;
             case "CURRENT":
                 ownerBookings = bookingRepository.getBookingsForOwnerCurrent(userId, LocalDateTime.now(), LocalDateTime.now());
                 break;
@@ -119,7 +126,8 @@ public class BookingServiceImpl implements BookingService {
                 ownerBookings = bookingRepository.getBookingsForOwnerByStatus(userId, state);
                 break;
             default:
-                ownerBookings = bookingRepository.getBookingsForOwner(userId);
+                log.warn("Некорректный статус бронирования");
+                throw new ValidationException("Некорректный статус бронирования");
         }
         log.info("Получен список бронирований для владельца id={} по условию {}", userId, state);
 

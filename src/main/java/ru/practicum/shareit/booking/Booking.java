@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking;
 
 import lombok.*;
-import org.aspectj.lang.annotation.After;
 import org.hibernate.Hibernate;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.User;
@@ -10,7 +9,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Objects;
 
 /**

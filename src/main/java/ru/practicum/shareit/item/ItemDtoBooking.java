@@ -2,17 +2,14 @@ package ru.practicum.shareit.item;
 
 import lombok.Builder;
 import lombok.Data;
+import ru.practicum.shareit.booking.BookingDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-/**
- * TODO Sprint add-controllers.
- */
-
 @Data
 @Builder
-public class ItemDto {
+public class ItemDtoBooking {
 
     private Integer id;
 
@@ -24,5 +21,8 @@ public class ItemDto {
 
     @NotNull(message = "Не указана доступность вещи")
     private Boolean available;
+
+    private BookingDto lastBooking;
+    private BookingDto nextBooking;
 
 }
