@@ -58,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
         log.info("Вызван список вещей для пользователя id ={}", userId);
 
 //        return itemDao.getItemsForUser(userId);
-        return itemRepository.findAllByUserId(userId);
+        return itemRepository.findAllByOwnerId(userId);
     }
 
     @Override
