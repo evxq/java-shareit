@@ -7,6 +7,7 @@ import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingDto;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
-//    private final ItemDao itemDao;
+    //    private final ItemDao itemDao;
 //    private final UserDao userDao;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
@@ -29,17 +30,22 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto addItem(Integer userId, ItemDto itemDto) {
-        Item item = ItemMapper.toItem(itemDto);
-        if (item.getName() == null || item.getName().isEmpty() || item.getDescription() == null || item.getIsAvailable() == null) {
+        if (itemDto.getName() == null || itemDto.getName().isEmpty()
+                || itemDto.getDescription() == null || itemDto.getAvailable() == null) {
             log.warn("Недостаточно данных для создания вещи");
             throw new ValidationException("Недостаточно данных для создания вещи");
         }
+        Item item = ItemMapper.toItem(itemDto);
 //        item.setOwner(userDao.getUserById(userId));
-//        item.setOwner(userRepository.getReferenceById(userId));                       ////////// !!!!!!!!!!!!!!!!
-        item.setOwner(userRepository.getById(userId));
-        log.info("Создана вещь id={}", item.getId());
+        item.setOwner(userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.warn("Пользователь не найден");
+                    return new NotFoundException("Такой пользователь не найден");
+                }));
+        Item newItem = itemRepository.save(item);
+        log.info("Создана вещь id={}", newItem.getId());
 //        return itemDao.addItem(item);
-        return ItemMapper.toItemDto(itemRepository.save(item));
+        return ItemMapper.toItemDto(newItem);
     }
 
     @Override
@@ -47,56 +53,67 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getId() == null) {
             itemDto.setId(itemId);
         }
+        Item existedItem = itemRepository.getReferenceById(itemId);
+        if (!existedItem.getOwner().getId().equals(userId)) {
+            log.warn("Объект принадлежит другому пользователю");
+            throw new NotFoundException("Объект принадлежит другому пользователю");
+        }
+        if (itemDto.getName() != null) {                                // ОБНОВЛЯТЬ ТОЛЬКО ИМЯ
+            existedItem.setName(itemDto.getName());
+        }
+        if (itemDto.getDescription() != null) {                         // ОБНОВЛЯТЬ ТОЛЬКО ОПИСАНИЕ
+            existedItem.setDescription(itemDto.getDescription());
+        }
+        if (itemDto.getAvailable() != null) {                           // ОБНОВЛЯТЬ ТОЛЬКО ДОСТУПНОСТЬ
+            existedItem.setIsAvailable(itemDto.getAvailable());
+        }
+        Item updItem = itemRepository.save(existedItem);
         log.info("Обновлена вещь id={}", itemId);
 //        return itemDao.updateItem(userId, ItemMapper.toItem(itemDto));
-        return ItemMapper.toItemDto(itemRepository.save(ItemMapper.toItem(itemDto)));
+        return ItemMapper.toItemDto(updItem);
     }
 
     @Override
     public ItemDtoBooking getItemById(Integer itemId) {
-        log.info("Вызвана вещь id ={}", itemId);
 //        return itemDao.getItemById(itemId);
-//        Item item = itemRepository.getReferenceById(itemId);                      !!!!!!!!!!!!!!!!!!!!
-        Item item = itemRepository.getById(itemId);
-        /*ItemDtoBooking itemDtoBooking = ItemMapper.toItemDtoBooking(itemRepository.getReferenceById(itemId));
-        BookingDto lastBookingDto = BookingMapper.toBookingDto(bookingRepository.findLastBookingForItem(itemId, LocalDateTime.now()));
-        BookingDto nextBookingDto = BookingMapper.toBookingDto(bookingRepository.findNextBookingForItem(itemId, LocalDateTime.now()));
-        itemDtoBooking.setLastBooking(lastBookingDto);
-        itemDtoBooking.setNextBooking(nextBookingDto);
-        return itemDtoBooking;*/
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> {
+                    log.warn("Объект не найден");
+                    return new NotFoundException("Такой объект не найден");
+                });
+        log.info("Вызвана вещь id ={}", itemId);
+
         return setBookingsToItem(item);
     }
 
     @Override
     public List<ItemDtoBooking> getItemsForUser(Integer userId) {                         // Добавление дат бронирования при просмотре вещей
         log.info("Вызван список вещей для пользователя id ={}", userId);
-        List<Item> userItems = itemRepository.findAllByOwnerId(userId);
+//        List<Item> userItems = itemRepository.findAllByOwnerId(userId);
 //        return itemDao.getItemsForUser(userId);
-        return userItems.stream()
-                .map(item -> {
-                    /*ItemDtoBooking itemDtoBooking = ItemMapper.toItemDtoBooking(item);
-                    BookingDto lastBookingDto = BookingMapper.toBookingDto(bookingRepository.findLastBookingForItem(item.getId(), LocalDateTime.now()));
-                    BookingDto nextBookingDto = BookingMapper.toBookingDto(bookingRepository.findNextBookingForItem(item.getId(), LocalDateTime.now()));
-                    itemDtoBooking.setLastBooking(lastBookingDto);
-                    itemDtoBooking.setNextBooking(nextBookingDto);
-                    return itemDtoBooking;*/
-                    return setBookingsToItem(item);
-                })
+        return itemRepository.findAllByOwnerId(userId)
+                .stream()
+                .map(this::setBookingsToItem)
                 .collect(Collectors.toList());
     }
 
     private ItemDtoBooking setBookingsToItem(Item item) {
         ItemDtoBooking itemDtoBooking = ItemMapper.toItemDtoBooking(item);
-        BookingDto lastBookingDto = BookingMapper.toBookingDto(bookingRepository.findLastBookingForItem(item.getId(), LocalDateTime.now()).get(0));
-        BookingDto nextBookingDto = BookingMapper.toBookingDto(bookingRepository.findNextBookingForItem(item.getId(), LocalDateTime.now()).get(0));
-        itemDtoBooking.setLastBooking(lastBookingDto);
-        itemDtoBooking.setNextBooking(nextBookingDto);
+        List<Booking> lastBooking = bookingRepository.findLastBookingForItem(item.getId(), LocalDateTime.now());
+        if (!lastBooking.isEmpty()) {
+            BookingDto lastBookingDto = BookingMapper.toBookingDto(lastBooking.get(0));
+            itemDtoBooking.setLastBooking(lastBookingDto);
+        }
+        List<Booking> nextBooking = bookingRepository.findNextBookingForItem(item.getId(), LocalDateTime.now());
+        if (!nextBooking.isEmpty()) {
+            BookingDto nextBookingDto = BookingMapper.toBookingDto(nextBooking.get(0));
+            itemDtoBooking.setNextBooking(nextBookingDto);
+        }
         List<CommentDto> commentDtoList = commentRepository.findAllByItemId(item.getId())
                 .stream()
                 .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList());
         itemDtoBooking.setComments(commentDtoList);
-
         return itemDtoBooking;
     }
 

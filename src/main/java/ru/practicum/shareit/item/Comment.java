@@ -38,7 +38,7 @@ public class Comment {
     @ToString.Exclude
     private User author;
 
-    private LocalDateTime created;
+    private LocalDateTime created;                           // @Column не указан
 
     public Comment(Integer id, String text, LocalDateTime created) {
         this.id = id;

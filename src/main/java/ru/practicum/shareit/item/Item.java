@@ -17,6 +17,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
 @RequiredArgsConstructor
 @Table(name = "items")
 public class Item {
@@ -42,7 +43,11 @@ public class Item {
 
     private Integer requestId;
 
-    public Item(Integer itemDtoId, String name, String description, Boolean available) {
+    public Item(Integer id, String name, String description, Boolean isAvailable) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.isAvailable = isAvailable;
     }
 
     @Override
