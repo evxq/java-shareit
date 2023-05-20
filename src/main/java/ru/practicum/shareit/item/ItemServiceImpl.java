@@ -35,7 +35,8 @@ public class ItemServiceImpl implements ItemService {
             throw new ValidationException("Недостаточно данных для создания вещи");
         }
 //        item.setOwner(userDao.getUserById(userId));
-        item.setOwner(userRepository.getReferenceById(userId));
+//        item.setOwner(userRepository.getReferenceById(userId));                       ////////// !!!!!!!!!!!!!!!!
+        item.setOwner(userRepository.getById(userId));
         log.info("Создана вещь id={}", item.getId());
 //        return itemDao.addItem(item);
         return ItemMapper.toItemDto(itemRepository.save(item));
@@ -55,7 +56,8 @@ public class ItemServiceImpl implements ItemService {
     public ItemDtoBooking getItemById(Integer itemId) {
         log.info("Вызвана вещь id ={}", itemId);
 //        return itemDao.getItemById(itemId);
-        Item item = itemRepository.getReferenceById(itemId);
+//        Item item = itemRepository.getReferenceById(itemId);                      !!!!!!!!!!!!!!!!!!!!
+        Item item = itemRepository.getById(itemId);
         /*ItemDtoBooking itemDtoBooking = ItemMapper.toItemDtoBooking(itemRepository.getReferenceById(itemId));
         BookingDto lastBookingDto = BookingMapper.toBookingDto(bookingRepository.findLastBookingForItem(itemId, LocalDateTime.now()));
         BookingDto nextBookingDto = BookingMapper.toBookingDto(bookingRepository.findNextBookingForItem(itemId, LocalDateTime.now()));
@@ -85,8 +87,8 @@ public class ItemServiceImpl implements ItemService {
 
     private ItemDtoBooking setBookingsToItem(Item item) {
         ItemDtoBooking itemDtoBooking = ItemMapper.toItemDtoBooking(item);
-        BookingDto lastBookingDto = BookingMapper.toBookingDto(bookingRepository.findLastBookingForItem(item.getId(), LocalDateTime.now()));
-        BookingDto nextBookingDto = BookingMapper.toBookingDto(bookingRepository.findNextBookingForItem(item.getId(), LocalDateTime.now()));
+        BookingDto lastBookingDto = BookingMapper.toBookingDto(bookingRepository.findLastBookingForItem(item.getId(), LocalDateTime.now()).get(0));
+        BookingDto nextBookingDto = BookingMapper.toBookingDto(bookingRepository.findNextBookingForItem(item.getId(), LocalDateTime.now()).get(0));
         itemDtoBooking.setLastBooking(lastBookingDto);
         itemDtoBooking.setNextBooking(nextBookingDto);
         List<CommentDto> commentDtoList = commentRepository.findAllByItemId(item.getId())

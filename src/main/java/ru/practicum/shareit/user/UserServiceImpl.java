@@ -33,7 +33,8 @@ public class UserServiceImpl implements UserService {
         log.info("Вызван пользователь id={}", userId);
 
 //        return userDao.getUserById(userId);
-        return userRepository.getReferenceById(userId);
+//        return userRepository.getReferenceById(userId);                                   !!!!!!!!!!!!!!!!!!!!!!!!!1
+        return userRepository.getById(userId);
     }
 
     public List<User> getAllUsers() {

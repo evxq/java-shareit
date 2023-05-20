@@ -19,8 +19,10 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+@Builder
+//@RequiredArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "bookings")
 public class Booking {
 
@@ -50,12 +52,8 @@ public class Booking {
     @ToString.Exclude
     private User booker;
 
+    @Enumerated(EnumType.STRING)
     private BookingStatus status;
-
-    public Booking(LocalDateTime start, LocalDateTime end) {
-        this.start = start;
-        this.end = end;
-    }
 
     @Override
     public boolean equals(Object o) {

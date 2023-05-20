@@ -90,10 +90,10 @@ public class BookingServiceImpl implements BookingService {
                 userBookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
                 break;
             case "WAITING":
-                userBookings = bookingRepository.findAllByBookerIdAndStatusIsWaitingOrderByStartDesc(userId);
+                userBookings = bookingRepository.findAllByBookerIdAndStatusIsOrderByStartDesc(userId, "WAITING");
                 break;
             case "REJECTED":
-                userBookings = bookingRepository.findAllByBookerIdAndStatusIsRejectedOrderByStartDesc(userId);
+                userBookings = bookingRepository.findAllByBookerIdAndStatusIsOrderByStartDesc(userId, "REJECTED");
                 break;
             default:
                 log.warn("Некорректный статус бронирования");
