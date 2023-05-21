@@ -1,5 +1,7 @@
 package ru.practicum.shareit.item;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.*;
 import org.hibernate.Hibernate;
 import ru.practicum.shareit.user.User;
@@ -19,6 +21,7 @@ import java.util.Objects;
 @ToString
 @AllArgsConstructor
 @RequiredArgsConstructor
+//@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "items")
 public class Item {
 
@@ -33,6 +36,7 @@ public class Item {
     private String description;                                 // @Column не указан, т.к названия поля и колонки совпадают
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "owner_id")
     @ToString.Exclude
     private User owner;

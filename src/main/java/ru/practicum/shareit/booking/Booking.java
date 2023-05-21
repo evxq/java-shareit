@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.hibernate.Hibernate;
 import ru.practicum.shareit.item.Item;
@@ -23,6 +24,7 @@ import java.util.Objects;
 //@RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
+//@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "bookings")
 public class Booking {
 
@@ -42,12 +44,14 @@ public class Booking {
 
     @NotNull(message = "Нужно указать объект бронирования")
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "item_id")
     @ToString.Exclude
     private Item item;
 
     @NotNull(message = "Нужно указать пользователя-инициатора бронирования")
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "booker_id")
     @ToString.Exclude
     private User booker;

@@ -46,11 +46,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     List<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(Integer userId, LocalDateTime start);                                      // FUTURE
 
-//    List<Booking> findAllByBookerIdAndStatusWaitingOrderByStartDesc(Integer userId, String status);                                                      // WAITING
-    List<Booking> findAllByBookerIdAndStatusIsOrderByStartDesc(Integer userId, String status);
-
-//    List<Booking> findAllByBookerIdAndStatusRejectedOrderByStartDesc(Integer userId, String status);                                                     // REJECTED
-//    List<Booking> findAllByBookerIdAndStatusRejectedOrderByStartDesc(Integer userId, String status);
+    List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(Integer userId, BookingStatus status);                                         // WAITING / REJECTED
 
     String BOOKING_FOR_ITEM = "SELECT bk " +
             "FROM Booking bk " +

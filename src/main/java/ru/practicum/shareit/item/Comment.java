@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -17,6 +18,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "comments")
 public class Comment {
 
@@ -28,12 +30,14 @@ public class Comment {
 
     @NotNull(message = "Не указан объект комментария")
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "item_id")
     @ToString.Exclude
     private Item item;
 
     @NotNull(message = "Не указан автор комментария")
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "author_id")
     @ToString.Exclude
     private User author;

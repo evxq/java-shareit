@@ -26,4 +26,12 @@ public class ItemMapper {
                 .available(item.getIsAvailable()).build();
     }
 
+    public static Item toItem(ItemDtoBooking itemDtoBooking) {
+        return new Item(
+                itemDtoBooking.getId(),
+                itemDtoBooking.getName(),
+                itemDtoBooking.getDescription(),
+                itemDtoBooking.getAvailable());
+    }
+
 }
