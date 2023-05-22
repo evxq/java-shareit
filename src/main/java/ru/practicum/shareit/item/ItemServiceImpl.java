@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.*;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
-import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
@@ -22,8 +21,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
-    //    private final ItemDao itemDao;
-//    private final UserDao userDao;
     private final UserService userService;
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
@@ -37,11 +34,10 @@ public class ItemServiceImpl implements ItemService {
             throw new ValidationException("Недостаточно данных для создания вещи");
         }
         Item item = ItemMapper.toItem(itemDto);
-//        item.setOwner(userDao.getUserById(userId));
         item.setOwner(userService.getUserById(userId));
         Item newItem = itemRepository.save(item);
         log.info("Создана вещь id={}", newItem.getId());
-//        return itemDao.addItem(item);
+
         return ItemMapper.toItemDto(newItem);
     }
 
@@ -66,13 +62,12 @@ public class ItemServiceImpl implements ItemService {
         }
         Item updItem = itemRepository.save(existedItem);
         log.info("Обновлена вещь id={}", itemId);
-//        return itemDao.updateItem(userId, ItemMapper.toItem(itemDto));
+
         return ItemMapper.toItemDto(updItem);
     }
 
     @Override
     public ItemDtoBooking getItemDtoBookingById(Integer itemId, Integer userId) {
-//        return itemDao.getItemById(itemId);
         Item item = getItemById(itemId);
         ItemDtoBooking itemDtoBooking = setCommentsToItem(item);
         log.info("Вызвана вещь id={}", itemId);
@@ -96,8 +91,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDtoBooking> getItemsForUser(Integer userId) {
         log.info("Вызван список вещей для пользователя id ={}", userId);
-//        List<Item> userItems = itemRepository.findAllByOwnerId(userId);
-//        return itemDao.getItemsForUser(userId);
+
         return itemRepository.findAllByOwnerId(userId)
                 .stream()
                 .map(this::setCommentsToItem)
@@ -112,7 +106,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private ItemDtoBooking setBookingsToItem(ItemDtoBooking itemDtoBooking) {
-//        ItemDtoBooking itemDtoBooking = ItemMapper.toItemDtoBooking(item);
         List<Booking> lastBooking = bookingRepository.findLastBookingForItem(itemDtoBooking.getId(), LocalDateTime.now())
                 .stream()
                 .filter(book -> book.getStatus() != BookingStatus.REJECTED)
@@ -150,7 +143,7 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
         log.info("Вызван список вещей по строке поиска \"{}\"", text);
-//        return itemDao.searchItemByText(text.toLowerCase());
+
         return itemRepository.findAllByTextContaining(text.toLowerCase())
                 .stream()
                 .map(ItemMapper::toItemDto)
@@ -168,14 +161,6 @@ public class ItemServiceImpl implements ItemService {
                 .filter(book -> book.getEnd().isBefore(LocalDateTime.now()))
                 .filter(book -> book.getStatus() != BookingStatus.REJECTED)
                 .collect(Collectors.toList());
-        /*System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! BOOKING FOR COMMENTS: " + booking);
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NOW: " + LocalDateTime.now());
-        System.out.println();
-        System.out.println();
-        System.out.println();*/
         if (booking.isEmpty()) {
             log.info("Пользователь не может оставить комментарий для объекта, который не использовал");
             throw new ValidationException("Пользователь не может оставить комментарий для объекта, который не использовал");

@@ -18,10 +18,9 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class BookingServiceImpl implements BookingService  {
+public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
-//    private final UserRepository userRepository;
     private final UserService userService;
     private final ItemService itemService;
 
@@ -45,10 +44,6 @@ public class BookingServiceImpl implements BookingService  {
         }
         Booking booking = BookingMapper.toBooking(bookingDto);
         booking.setBooker(user);
-        /*if (bookingDto.getStart().isBefore(LocalDateTime.now())) {       // ИЗМЕНИТЬ СТАТУС ВЕЩИ НА ПЕРИОД БРОНИРОВАНИЯ ????
-            item.setIsAvailable(false);
-            item = itemRepository.save(item);
-        }*/
         booking.setItem(item);
         booking.setStatus(BookingStatus.WAITING);
         Booking newBooking = bookingRepository.save(booking);
@@ -93,7 +88,7 @@ public class BookingServiceImpl implements BookingService  {
     }
 
     @Override
-    public List<Booking> getBookingsForUser(Integer userId, String state) {             // Получение списка всех бронирований пользователя
+    public List<Booking> getBookingsForUser(Integer userId, String state) {
         userService.getUserById(userId);
         List<Booking> userBookings;
         switch (state) {
@@ -123,7 +118,7 @@ public class BookingServiceImpl implements BookingService  {
     }
 
     @Override
-    public List<Booking> getBookingsForOwner(Integer userId, String state) {      // Получение списка бронирований для всех вещей пользователя-владельца
+    public List<Booking> getBookingsForOwner(Integer userId, String state) {
         userService.getUserById(userId);
         List<Booking> ownerBookings;
         switch (state) {
@@ -152,19 +147,11 @@ public class BookingServiceImpl implements BookingService  {
         return ownerBookings;
     }
 
-    /*private User checkUserForExist(Integer userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> {
-                    log.warn("Пользователь не найден");
-                    return new NotFoundException("Такой пользователь не найден");
-                });
-    }*/
-
     private Booking checkBookingForExist(Integer bookingId) {
         return bookingRepository.findById(bookingId)
                 .orElseThrow(() -> {
                     log.warn("Бронирование не найдено");
-                    return new NotFoundException("Такое бронирование не найдено");
+                    throw new NotFoundException("Такое бронирование не найдено");
                 });
     }
 

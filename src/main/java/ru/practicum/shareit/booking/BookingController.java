@@ -16,35 +16,35 @@ public class BookingController {
 
     private final BookingService bookingService;
 
-    @PostMapping                                                                          // ПО ТЕСТАМ возвращается объект Booking
+    @PostMapping
     public Booking createBooking(@RequestHeader("X-Sharer-User-Id") Integer userId,
                                  @Valid @RequestBody BookingDto bookingDto) {
         return bookingService.createBooking(userId, bookingDto);
     }
 
-    @PatchMapping("/{bookingId}")                                                         // ПО ТЕСТАМ возвращается объект Booking
-    public Booking responseToBooking(@RequestHeader("X-Sharer-User-Id") Integer userId,       // здесь вроде передается id владелеца
+    @PatchMapping("/{bookingId}")
+    public Booking responseToBooking(@RequestHeader("X-Sharer-User-Id") Integer ownerId,
                                      @PathVariable Integer bookingId,
                                      @RequestParam Boolean approved) {
-        return bookingService.responseToBooking(userId, bookingId, approved);
+        return bookingService.responseToBooking(ownerId, bookingId, approved);
     }
 
-    @GetMapping("/{bookingId}")                                                           // ПО ТЕСТАМ возвращается объект Booking
-    public Booking getBookingById(@RequestHeader("X-Sharer-User-Id") Integer userId,          // передается id пользователя или владельца вещи
+    @GetMapping("/{bookingId}")
+    public Booking getBookingById(@RequestHeader("X-Sharer-User-Id") Integer userId,
                                   @PathVariable Integer bookingId) {
         return bookingService.getBookingById(userId, bookingId);
     }
 
-    @GetMapping                                                                           // ПО ТЕСТАМ возвращается объект Booking
-    public List<Booking> getBookingsForUser(@RequestHeader("X-Sharer-User-Id") Integer userId,          // передается id пользователя, для которого нужно получить список бронирований
+    @GetMapping
+    public List<Booking> getBookingsForUser(@RequestHeader("X-Sharer-User-Id") Integer bookerId,
                                             @RequestParam(required = false, defaultValue = "ALL") String state) {
-        return bookingService.getBookingsForUser(userId, state);
+        return bookingService.getBookingsForUser(bookerId, state);
     }
 
-    @GetMapping("/owner")                                                                 // ПО ТЕСТАМ возвращается объект Booking
-    public List<Booking> getBookingsForOwner(@RequestHeader("X-Sharer-User-Id") Integer userId,     // передается id владелеца вещей, для которых нужно получить список бронирований
+    @GetMapping("/owner")
+    public List<Booking> getBookingsForOwner(@RequestHeader("X-Sharer-User-Id") Integer ownerId,
                                              @RequestParam(required = false, defaultValue = "ALL") String state) {
-        return bookingService.getBookingsForOwner(userId, state);
+        return bookingService.getBookingsForOwner(ownerId, state);
     }
 
 }

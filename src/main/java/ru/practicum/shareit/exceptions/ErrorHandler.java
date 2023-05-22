@@ -33,11 +33,11 @@ public class ErrorHandler {
         return new ErrorResponse(n.getMessage());
     }
 
-    /*@ExceptionHandler                                                               // 500
+    @ExceptionHandler                                                               // 500
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleException(final Exception e) {
         return new ErrorResponse("Произошла непредвиденная ошибка");
-    }*/
+    }
 
     static class ErrorResponse {
         String error;

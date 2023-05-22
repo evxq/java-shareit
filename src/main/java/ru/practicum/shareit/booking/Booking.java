@@ -21,10 +21,8 @@ import java.util.Objects;
 @Setter
 @ToString
 @Builder
-//@RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
-//@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "bookings")
 public class Booking {
 

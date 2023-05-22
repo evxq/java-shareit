@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.*;
 import org.hibernate.Hibernate;
 import ru.practicum.shareit.user.User;
@@ -21,7 +20,6 @@ import java.util.Objects;
 @ToString
 @AllArgsConstructor
 @RequiredArgsConstructor
-//@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "items")
 public class Item {
 
@@ -30,10 +28,10 @@ public class Item {
     private Integer id;
 
     @NotBlank(message = "Название вещи не может быть пустым")
-    private String name;                                        // @Column не указан, т.к названия поля и колонки совпадают
+    private String name;                                                    // @Column не указан
 
     @NotNull(message = "Не указано описание вещи")
-    private String description;                                 // @Column не указан, т.к названия поля и колонки совпадают
+    private String description;                                             // @Column не указан
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -66,4 +64,5 @@ public class Item {
     public int hashCode() {
         return getClass().hashCode();
     }
+
 }
