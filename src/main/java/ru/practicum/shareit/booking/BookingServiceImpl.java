@@ -94,7 +94,6 @@ public class BookingServiceImpl implements BookingService  {
 
     @Override
     public List<Booking> getBookingsForUser(Integer userId, String state) {             // Получение списка всех бронирований пользователя
-//        checkUserForExist(userId);
         userService.getUserById(userId);
         List<Booking> userBookings;
         switch (state) {
@@ -125,7 +124,6 @@ public class BookingServiceImpl implements BookingService  {
 
     @Override
     public List<Booking> getBookingsForOwner(Integer userId, String state) {      // Получение списка бронирований для всех вещей пользователя-владельца
-//        checkUserForExist(userId);
         userService.getUserById(userId);
         List<Booking> ownerBookings;
         switch (state) {

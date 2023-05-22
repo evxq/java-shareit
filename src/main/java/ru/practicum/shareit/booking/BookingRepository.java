@@ -65,7 +65,9 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             "FROM Booking bk " +
             "JOIN bk.item it " +
             "JOIN bk.booker us " +
-            "WHERE it.id = ?1 AND us.id = ?2 AND bk.end < ?3")
-    List<Booking> findBookingByUserAndItem(Integer itemId, Integer userId, LocalDateTime start);
+//            "WHERE it.id = ?1 AND us.id = ?2 AND bk.end < ?3")
+            "WHERE it.id = ?1 AND us.id = ?2")
+//            "WHERE (it.id = ?1 AND us.id = ?2) AND UPPER(bk.status) IS NOT REJECTED")
+    List<Booking> findBookingByUserAndItem(Integer itemId, Integer userId);
 
 }
