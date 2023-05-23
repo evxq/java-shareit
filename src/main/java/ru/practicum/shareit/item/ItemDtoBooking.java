@@ -2,7 +2,8 @@ package ru.practicum.shareit.item;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.booking.BookingDto;
+import ru.practicum.shareit.booking.BookingItemDto;
+import ru.practicum.shareit.item.comment.CommentDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -19,8 +20,8 @@ public class ItemDtoBooking {
     private String description;
     @NotNull(message = "Не указана доступность вещи")
     private Boolean available;
-    private BookingDto lastBooking;
-    private BookingDto nextBooking;
+    private BookingItemDto lastBooking;
+    private BookingItemDto nextBooking;
     private List<CommentDto> comments;
 
 }

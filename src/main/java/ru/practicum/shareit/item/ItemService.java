@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.item.comment.CommentDto;
 
 import java.util.List;
 

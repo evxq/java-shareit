@@ -13,6 +13,7 @@ import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -26,34 +27,30 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public Booking createBooking(Integer userId, BookingDto bookingDto) {
-        if (bookingDto.getStart().isAfter(bookingDto.getEnd())
-                || bookingDto.getStart().equals(bookingDto.getEnd())) {
-            log.warn("Даты бронирования не корректны");
-            throw new ValidationException("Даты бронирования не корректны");
-        }
+    public BookingDto createBooking(Integer userId, BookingItemDto bookingItemDto) {
+        checkBookingDates(bookingItemDto);
         User user = userService.getUserById(userId);
-        Item item = itemService.getItemById(bookingDto.getItemId());
+        Item item = itemService.getItemById(bookingItemDto.getItemId());
         if (item.getOwner().equals(user)) {
             log.warn("Пользователь не может забронировать собственный предмет");
             throw new NotFoundException("Пользователь не может забронировать собственный предмет");
         }
-        if (bookingDto.getStart().isBefore(LocalDateTime.now()) || !item.getIsAvailable()) {
+        if (bookingItemDto.getStart().isBefore(LocalDateTime.now()) || !item.getIsAvailable()) {
             log.warn("Объект не доступен для бронирования");
             throw new ValidationException("Объект не доступен для бронирования");
         }
-        Booking booking = BookingMapper.toBooking(bookingDto);
+        Booking booking = BookingMapper.toBooking(bookingItemDto);
         booking.setBooker(user);
         booking.setItem(item);
         booking.setStatus(BookingStatus.WAITING);
         Booking newBooking = bookingRepository.save(booking);
         log.info("Создано бронирование id={}", newBooking.getId());
 
-        return newBooking;
+        return BookingMapper.toBookingDto(newBooking);
     }
 
     @Override
-    public Booking responseToBooking(Integer userId, Integer bookingId, Boolean approved) {
+    public BookingDto responseToBooking(Integer userId, Integer bookingId, Boolean approved) {
         Booking booking = checkBookingForExist(bookingId);
         Integer ownerId = booking.getItem().getOwner().getId();
         if (!ownerId.equals(userId)) {
@@ -71,11 +68,11 @@ public class BookingServiceImpl implements BookingService {
             booking.setStatus(BookingStatus.REJECTED);
             log.info("Бронирование id={} отклонено", booking.getId());
         }
-        return bookingRepository.save(booking);
+        return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
     @Override
-    public Booking getBookingById(Integer userId, Integer bookingId) {
+    public BookingDto getBookingById(Integer userId, Integer bookingId) {
         Booking booking = checkBookingForExist(bookingId);
         userService.getUserById(userId);
         Integer ownerId = booking.getItem().getOwner().getId();
@@ -84,11 +81,11 @@ public class BookingServiceImpl implements BookingService {
             log.warn("id пользователя не соответствует участникам бронирования");
             throw new NotFoundException("Только букер или владелец объекта может просматривать бронирование");
         }
-        return booking;
+        return BookingMapper.toBookingDto(booking);
     }
 
     @Override
-    public List<Booking> getBookingsForUser(Integer userId, String state) {
+    public List<BookingDto> getBookingsForUser(Integer userId, String state) {
         userService.getUserById(userId);
         List<Booking> userBookings;
         switch (state) {
@@ -114,11 +111,11 @@ public class BookingServiceImpl implements BookingService {
         }
         log.info("Получен список бронирований для пользователя id={} по условию {}", userId, state);
 
-        return userBookings;
+        return userBookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 
     @Override
-    public List<Booking> getBookingsForOwner(Integer userId, String state) {
+    public List<BookingDto> getBookingsForOwner(Integer userId, String state) {
         userService.getUserById(userId);
         List<Booking> ownerBookings;
         switch (state) {
@@ -144,7 +141,7 @@ public class BookingServiceImpl implements BookingService {
         }
         log.info("Получен список бронирований для владельца id={} по условию {}", userId, state);
 
-        return ownerBookings;
+        return ownerBookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 
     private Booking checkBookingForExist(Integer bookingId) {
@@ -153,6 +150,14 @@ public class BookingServiceImpl implements BookingService {
                     log.warn("Бронирование не найдено");
                     throw new NotFoundException("Такое бронирование не найдено");
                 });
+    }
+
+    private void checkBookingDates(BookingItemDto bookingItemDto) {
+        if (bookingItemDto.getStart().isAfter(bookingItemDto.getEnd())
+                || bookingItemDto.getStart().equals(bookingItemDto.getEnd())) {
+            log.warn("Даты бронирования не корректны");
+            throw new ValidationException("Даты бронирования не корректны");
+        }
     }
 
 }

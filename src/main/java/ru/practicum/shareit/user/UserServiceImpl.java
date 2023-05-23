@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.NotFoundException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -14,31 +15,36 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    public User createUser(User user) {
+    @Override
+    public UserDto createUser(UserDto userDto) {
+        User user = UserMapper.toUser(userDto);
         User newUser = userRepository.save(user);
         log.info("Создан пользователь id={}", newUser.getId());
+        System.out.println(newUser);
 
-        return newUser;
+        return UserMapper.toUserDto(newUser);
     }
 
-    public User updateUser(User user, Integer userId) {
+    @Override
+    public UserDto updateUser(UserDto userDto, Integer userId) {
         User existedUser = userRepository.findById(userId)
                 .orElseThrow(() -> {
                     log.warn("Пользователь не найден");
                     return new NotFoundException("Такой пользователь не найден");
                 });
-        if (user.getName() != null) {
-            existedUser.setName(user.getName());
+        if (userDto.getName() != null) {
+            existedUser.setName(userDto.getName());
         }
-        if (user.getEmail() != null) {
-            existedUser.setEmail(user.getEmail());
+        if (userDto.getEmail() != null) {
+            existedUser.setEmail(userDto.getEmail());
         }
         User updUser = userRepository.save(existedUser);
-        log.info("Обновлен пользователь id={}", user.getId());
+        log.info("Обновлен пользователь id={}", userDto.getId());
 
-        return updUser;
+        return UserMapper.toUserDto(updUser);
     }
 
+    @Override
     public User getUserById(Integer userId) {
         log.info("Вызван пользователь id={}", userId);
 
@@ -48,12 +54,14 @@ public class UserServiceImpl implements UserService {
         });
     }
 
-    public List<User> getAllUsers() {
+    @Override
+    public List<UserDto> getAllUsers() {
         log.info("Вызван список всех пользователей");
 
-        return userRepository.findAll();
+        return userRepository.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
 
+    @Override
     public void deleteUser(Integer userId) {
         userRepository.deleteById(userId);
         log.info("Удален пользователь id={}", userId);

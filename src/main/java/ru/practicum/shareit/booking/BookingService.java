@@ -9,14 +9,14 @@ import java.util.List;
 public interface BookingService {
 
     @Transactional
-    Booking createBooking(Integer userId, BookingDto bookingDto);
+    BookingDto createBooking(Integer userId, BookingItemDto bookingItemDto);
 
-    Booking responseToBooking(Integer userId, Integer bookingId, Boolean approved);
+    BookingDto responseToBooking(Integer userId, Integer bookingId, Boolean approved);
 
-    Booking getBookingById(Integer userId, Integer bookingId);
+    BookingDto getBookingById(Integer userId, Integer bookingId);
 
-    List<Booking> getBookingsForUser(Integer userId, String state);
+    List<BookingDto> getBookingsForUser(Integer userId, String state);
 
-    List<Booking> getBookingsForOwner(Integer userId, String state);
+    List<BookingDto> getBookingsForOwner(Integer userId, String state);
 
 }

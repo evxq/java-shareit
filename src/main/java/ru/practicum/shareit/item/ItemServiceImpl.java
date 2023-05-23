@@ -7,6 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.*;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
+import ru.practicum.shareit.item.comment.Comment;
+import ru.practicum.shareit.item.comment.CommentDto;
+import ru.practicum.shareit.item.comment.CommentMapper;
+import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
@@ -111,16 +115,16 @@ public class ItemServiceImpl implements ItemService {
                 .filter(book -> book.getStatus() != BookingStatus.REJECTED)
                 .collect(Collectors.toList());
         if (!lastBooking.isEmpty()) {
-            BookingDto lastBookingDto = BookingMapper.toBookingDto(lastBooking.get(0));
-            itemDtoBooking.setLastBooking(lastBookingDto);
+            BookingItemDto lastBookingItemDto = BookingMapper.toBookingItemDto(lastBooking.get(0));
+            itemDtoBooking.setLastBooking(lastBookingItemDto);
         }
         List<Booking> nextBooking = bookingRepository.findNextBookingForItem(itemDtoBooking.getId(), LocalDateTime.now())
                 .stream()
                 .filter(book -> book.getStatus() != BookingStatus.REJECTED)
                 .collect(Collectors.toList());
         if (!nextBooking.isEmpty()) {
-            BookingDto nextBookingDto = BookingMapper.toBookingDto(nextBooking.get(0));
-            itemDtoBooking.setNextBooking(nextBookingDto);
+            BookingItemDto nextBookingItemDto = BookingMapper.toBookingItemDto(nextBooking.get(0));
+            itemDtoBooking.setNextBooking(nextBookingItemDto);
         }
         return itemDtoBooking;
     }

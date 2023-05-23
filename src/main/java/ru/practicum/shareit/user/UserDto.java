@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class UserDto {
 
-    private Integer userId;
+    private Integer id;
     private String name;
     @NotNull(message = "e-mail должен быть заполнен")
     @Email(message = "e-mail некорректен")
