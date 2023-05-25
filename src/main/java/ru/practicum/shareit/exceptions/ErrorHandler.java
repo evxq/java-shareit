@@ -50,5 +50,4 @@ public class ErrorHandler {
             return error;
         }
     }
-
 }

@@ -4,17 +4,34 @@ public class ItemMapper {
 
     public static ItemDto toItemDto(Item item) {
         return ItemDto.builder()
+                .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
-                .available(item.getAvailable()).build();
+                .available(item.getIsAvailable()).build();
     }
 
     public static Item toItem(ItemDto itemDto) {
-        return Item.builder()
-                .id(itemDto.getItemDtoId())
-                .name(itemDto.getName())
-                .description(itemDto.getDescription())
-                .available(itemDto.getAvailable()).build();
+        return new Item(
+                itemDto.getId(),
+                itemDto.getName(),
+                itemDto.getDescription(),
+                itemDto.getAvailable());
+    }
+
+    public static ItemDtoBooking toItemDtoBooking(Item item) {
+        return ItemDtoBooking.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getIsAvailable()).build();
+    }
+
+    public static Item toItem(ItemDtoBooking itemDtoBooking) {
+        return new Item(
+                itemDtoBooking.getId(),
+                itemDtoBooking.getName(),
+                itemDtoBooking.getDescription(),
+                itemDtoBooking.getAvailable());
     }
 
 }
