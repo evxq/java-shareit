@@ -7,7 +7,8 @@ public class ItemMapper {
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
-                .available(item.getIsAvailable()).build();
+                .available(item.getIsAvailable())
+                .requestId(item.getRequestId()).build();
     }
 
     public static Item toItem(ItemDto itemDto) {
@@ -15,7 +16,8 @@ public class ItemMapper {
                 itemDto.getId(),
                 itemDto.getName(),
                 itemDto.getDescription(),
-                itemDto.getAvailable());
+                itemDto.getAvailable(),
+                itemDto.getRequestId());
     }
 
     public static ItemDtoBooking toItemDtoBooking(Item item) {
@@ -23,7 +25,8 @@ public class ItemMapper {
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
-                .available(item.getIsAvailable()).build();
+                .available(item.getIsAvailable())
+                .requestId(item.getRequestId()).build();
     }
 
     public static Item toItem(ItemDtoBooking itemDtoBooking) {
@@ -31,7 +34,8 @@ public class ItemMapper {
                 itemDtoBooking.getId(),
                 itemDtoBooking.getName(),
                 itemDtoBooking.getDescription(),
-                itemDtoBooking.getAvailable());
+                itemDtoBooking.getAvailable(),
+                itemDtoBooking.getRequestId());
     }
 
 }

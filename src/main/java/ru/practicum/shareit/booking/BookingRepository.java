@@ -1,5 +1,7 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -19,29 +21,40 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     String ORDER_QUERY = " ORDER BY bk.start DESC";
 
     @Query(OWNER_QUERY + ORDER_QUERY)
-    List<Booking> getBookingsForOwner(Integer userId);                                                                                      // ALL for owner
+    Page<Booking> getBookingsForOwner(Integer userId, Pageable page);                                                                // ALL for owner
 
     @Query(OWNER_QUERY + "AND UPPER(bk.status) = UPPER(?2)" + ORDER_QUERY)
-    List<Booking> getBookingsForOwnerByStatus(Integer userId, String state);                                                                // BY STATUS for owner
+    Page<Booking> getBookingsForOwnerByStatus(Integer userId, String state, Pageable page);                                          // BY STATUS for owner
 
     @Query(OWNER_QUERY + "AND bk.start < ?2 AND bk.end > ?3" + ORDER_QUERY)
-    List<Booking> getBookingsForOwnerCurrent(Integer userId, LocalDateTime start, LocalDateTime end);                                       // CURRENT for owner
+    Page<Booking> getBookingsForOwnerCurrent(Integer userId, LocalDateTime start, LocalDateTime end, Pageable page);                 // CURRENT for owner
 
     @Query(OWNER_QUERY + "AND bk.end < ?2" + ORDER_QUERY)
-    List<Booking> getBookingsForOwnerPast(Integer userId, LocalDateTime end);                                                               // PAST
+    Page<Booking> getBookingsForOwnerPast(Integer userId, LocalDateTime end, Pageable page);                                          // PAST
 
     @Query(OWNER_QUERY + "AND bk.start > ?2" + ORDER_QUERY)
-    List<Booking> getBookingsForOwnerFuture(Integer userId, LocalDateTime start);                                                           // FUTURE
+    Page<Booking> getBookingsForOwnerFuture(Integer userId, LocalDateTime start, Pageable page);                                      // FUTURE
 
-    List<Booking> findAllByBookerIdOrderByStartDesc(Integer userId);                                                                        // ALL for user
+    Page<Booking> findAllByBookerIdOrderByStartDesc(Integer userId, Pageable page);                                                       // ALL for user
 
-    List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(Integer userId, LocalDateTime start, LocalDateTime end);       // CURRENT for user
+    Page<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(Integer userId, LocalDateTime start, LocalDateTime end, Pageable page);       // CURRENT for user
 
-    List<Booking> findAllByBookerIdAndEndBeforeOrderByStartDesc(Integer userId, LocalDateTime end);                                         // PAST
+    Page<Booking> findAllByBookerIdAndEndBeforeOrderByStartDesc(Integer userId, LocalDateTime end, Pageable page);                        // PAST
 
-    List<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(Integer userId, LocalDateTime start);                                      // FUTURE
+    Page<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(Integer userId, LocalDateTime start, Pageable page);                     // FUTURE
 
-    List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(Integer userId, BookingStatus status);                                         // WAITING / REJECTED
+    Page<Booking> findAllByBookerIdAndStatusOrderByStartDesc(Integer userId, BookingStatus status, Pageable page);                        // WAITING / REJECTED
+
+    //    List<Booking> getBookingsForOwner(Integer userId);
+    //    List<Booking> getBookingsForOwnerByStatus(Integer userId, String state);
+    //    List<Booking> getBookingsForOwnerCurrent(Integer userId, LocalDateTime start, LocalDateTime end);
+    //    List<Booking> getBookingsForOwnerPast(Integer userId, LocalDateTime end);
+    //    List<Booking> getBookingsForOwnerFuture(Integer userId, LocalDateTime start);
+    //    List<Booking> findAllByBookerIdOrderByStartDesc(Integer userId);                                                                        // ALL for user
+    //    List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(Integer userId, LocalDateTime start, LocalDateTime end);       // CURRENT for user
+    //    List<Booking> findAllByBookerIdAndEndBeforeOrderByStartDesc(Integer userId, LocalDateTime end);                                         // PAST
+    //    List<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(Integer userId, LocalDateTime start);                                      // FUTURE
+    //    List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(Integer userId, BookingStatus status);                                         // WAITING / REJECTED
 
     String BOOKING_FOR_ITEM = "SELECT bk " +
             "FROM Booking bk " +

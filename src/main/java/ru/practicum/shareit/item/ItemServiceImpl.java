@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.*;
@@ -31,7 +32,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
 
     @Override
-    public ItemDto addItem(Integer userId, ItemDto itemDto) {
+    public ItemDto addItem(Integer userId, ItemDto itemDto) {                       // ДОБАВИТЬ СВЯЗЬ С REQUEST
         if (itemDto.getName() == null || itemDto.getName().isEmpty()
                 || itemDto.getDescription() == null || itemDto.getAvailable() == null) {
             log.warn("Недостаточно данных для создания вещи");
@@ -64,6 +65,9 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getAvailable() != null) {
             existedItem.setIsAvailable(itemDto.getAvailable());
         }
+        if (itemDto.getRequestId() != null) {
+            existedItem.setRequestId(itemDto.getRequestId());
+        }
         Item updItem = itemRepository.save(existedItem);
         log.info("Обновлена вещь id={}", itemId);
 
@@ -93,10 +97,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoBooking> getItemsForUser(Integer userId) {
+    public List<ItemDtoBooking> getItemsByOwner(Integer userId, int from, int size) {
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
         log.info("Вызван список вещей для пользователя id ={}", userId);
 
-        return itemRepository.findAllByOwnerId(userId)
+        return itemRepository.findAllByOwnerId(userId, page)
                 .stream()
                 .map(this::setCommentsToItem)
                 .map(this::setBookingsToItem)
@@ -141,14 +146,15 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItemByText(String text) {
+    public List<ItemDto> searchItemByText(String text, int from, int size) {
         if (text.isEmpty() || text.isBlank()) {
             log.warn("Вызван поиск вещей для пустой строки");
             return new ArrayList<>();
         }
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
         log.info("Вызван список вещей по строке поиска \"{}\"", text);
 
-        return itemRepository.findAllByTextContaining(text.toLowerCase())
+        return itemRepository.findAllByTextContaining(text.toLowerCase(), page)
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());

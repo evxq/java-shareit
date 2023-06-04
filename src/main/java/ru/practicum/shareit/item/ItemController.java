@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.comment.CommentDto;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
@@ -37,13 +39,17 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDtoBooking> getItemsForUser(@RequestHeader("X-Sharer-User-Id") Integer userId) {
-        return itemService.getItemsForUser(userId);
+    public List<ItemDtoBooking> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") Integer userId,
+                                                @PositiveOrZero @RequestParam(required = false, defaultValue = "0") int from,
+                                                @Positive @RequestParam(required = false, defaultValue = "10") int size) {
+        return itemService.getItemsByOwner(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItemByText(@RequestParam String text) {
-        return itemService.searchItemByText(text);
+    public List<ItemDto> searchItemByText(@RequestParam String text,
+                                          @PositiveOrZero @RequestParam(required = false, defaultValue = "0") int from,
+                                          @Positive @RequestParam(required = false, defaultValue = "10") int size) {
+        return itemService.searchItemByText(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
