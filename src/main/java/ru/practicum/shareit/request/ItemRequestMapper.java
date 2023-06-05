@@ -5,6 +5,7 @@ public class ItemRequestMapper {
     public static ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
         return ItemRequestDto.builder()
                 .id(itemRequest.getId())
+                .requesterId(itemRequest.getRequesterId())
                 .description(itemRequest.getDescription())
                 .created(itemRequest.getCreated()).build();
     }
@@ -12,6 +13,7 @@ public class ItemRequestMapper {
     public static ItemRequest toItemRequest(ItemRequestDto itemRequestDto) {
         return ItemRequest.builder()
                 .id(itemRequestDto.getId())
+                .requesterId(itemRequestDto.getRequesterId())
                 .description(itemRequestDto.getDescription())
                 .created(itemRequestDto.getCreated()).build();
     }

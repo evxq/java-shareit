@@ -93,24 +93,19 @@ public class BookingServiceImpl implements BookingService {
         Page<Booking> userBookings;
         switch (state) {
             case "ALL":
-//                userBookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
                 userBookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId, page);
                 break;
             case "CURRENT":
-//                userBookings = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now());
                 userBookings = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now(), page);
                 break;
             case "PAST":
-//                userBookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
                 userBookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now(), page);
                 break;
             case "FUTURE":
-//                userBookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
                 userBookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now(), page);
                 break;
             case "WAITING":
             case "REJECTED":
-//                userBookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.valueOf(state));
                 userBookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.valueOf(state), page);
                 break;
             default:
@@ -129,24 +124,19 @@ public class BookingServiceImpl implements BookingService {
         Page<Booking> ownerBookings;
         switch (state) {
             case "ALL":
-//                ownerBookings = bookingRepository.getBookingsForOwner(userId);
                 ownerBookings = bookingRepository.getBookingsForOwner(userId, page);
                 break;
             case "CURRENT":
-//                ownerBookings = bookingRepository.getBookingsForOwnerCurrent(userId, LocalDateTime.now(), LocalDateTime.now());
                 ownerBookings = bookingRepository.getBookingsForOwnerCurrent(userId, LocalDateTime.now(), LocalDateTime.now(), page);
                 break;
             case "PAST":
-//                ownerBookings = bookingRepository.getBookingsForOwnerPast(userId, LocalDateTime.now());
                 ownerBookings = bookingRepository.getBookingsForOwnerPast(userId, LocalDateTime.now(), page);
                 break;
             case "FUTURE":
-//                ownerBookings = bookingRepository.getBookingsForOwnerFuture(userId, LocalDateTime.now());
                 ownerBookings = bookingRepository.getBookingsForOwnerFuture(userId, LocalDateTime.now(), page);
                 break;
             case "WAITING":
             case "REJECTED":
-//                ownerBookings = bookingRepository.getBookingsForOwnerByStatus(userId, state);
                 ownerBookings = bookingRepository.getBookingsForOwnerByStatus(userId, state, page);
                 break;
             default:

@@ -2,10 +2,9 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exceptions.ValidationException;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
@@ -40,16 +39,22 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> getBookingsForUser(@RequestHeader("X-Sharer-User-Id") Integer bookerId,
                                                @RequestParam(required = false, defaultValue = "ALL") String state,
-                                               @PositiveOrZero @RequestParam(required = false, defaultValue = "0") int from,
-                                               @Positive @RequestParam(required = false, defaultValue = "10") int size) {
+                                               @RequestParam(required = false, defaultValue = "0") int from,
+                                               @RequestParam(required = false, defaultValue = "10") int size) {
+        if (from < 0 || size < 1) {
+            throw new ValidationException("Некорректные параметры пагинации");
+        }
         return bookingService.getBookingsForUser(bookerId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getBookingsForOwner(@RequestHeader("X-Sharer-User-Id") Integer ownerId,
                                                 @RequestParam(required = false, defaultValue = "ALL") String state,
-                                                @PositiveOrZero @RequestParam(required = false, defaultValue = "0") int from,
-                                                @Positive @RequestParam(required = false, defaultValue = "10") int size) {
+                                                @RequestParam(required = false, defaultValue = "0") int from,
+                                                @RequestParam(required = false, defaultValue = "10") int size) {
+        if (from < 0 || size < 1) {
+            throw new ValidationException("Некорректные параметры пагинации");
+        }
         return bookingService.getBookingsForOwner(ownerId, state, from, size);
     }
 

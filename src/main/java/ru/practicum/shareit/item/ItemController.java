@@ -2,10 +2,9 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.comment.CommentDto;
 
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
@@ -40,15 +39,21 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDtoBooking> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                                                @PositiveOrZero @RequestParam(required = false, defaultValue = "0") int from,
-                                                @Positive @RequestParam(required = false, defaultValue = "10") int size) {
+                                                @RequestParam(required = false, defaultValue = "0") int from,
+                                                @RequestParam(required = false, defaultValue = "10") int size) {
+        if (from < 0 || size < 1) {
+            throw new ValidationException("Некорректные параметры пагинации");
+        }
         return itemService.getItemsByOwner(userId, from, size);
     }
 
     @GetMapping("/search")
     public List<ItemDto> searchItemByText(@RequestParam String text,
-                                          @PositiveOrZero @RequestParam(required = false, defaultValue = "0") int from,
-                                          @Positive @RequestParam(required = false, defaultValue = "10") int size) {
+                                          @RequestParam(required = false, defaultValue = "0") int from,
+                                          @RequestParam(required = false, defaultValue = "10") int size) {
+        if (from < 0 || size < 1) {
+            throw new ValidationException("Некорректные параметры пагинации");
+        }
         return itemService.searchItemByText(text, from, size);
     }
 

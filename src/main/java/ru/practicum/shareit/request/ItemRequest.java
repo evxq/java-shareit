@@ -2,14 +2,11 @@ package ru.practicum.shareit.request;
 
 import lombok.*;
 import org.hibernate.Hibernate;
-import ru.practicum.shareit.item.ItemDto;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -23,8 +20,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
-@Table(name = "request")
+@Table(name = "requests")
 public class ItemRequest {
 
     @Id
@@ -41,8 +37,6 @@ public class ItemRequest {
     @Column(name = "requester_id")
     @NotNull(message = "Не указан инициатор запроса")
     private Integer requesterId;
-
-    private List<ItemDto> items = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

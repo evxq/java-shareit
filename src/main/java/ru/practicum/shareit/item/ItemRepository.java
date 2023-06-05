@@ -11,13 +11,13 @@ import java.util.List;
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Integer> {
 
-//    List<Item> findAllByOwnerId(Integer ownerId);
     Page<Item> findAllByOwnerId(Integer ownerId, Pageable page);
 
     @Query("SELECT it " +
             "FROM Item it " +
             "WHERE UPPER(it.name) LIKE UPPER(CONCAT('%', ?1, '%')) OR UPPER(it.description) LIKE UPPER(CONCAT('%', ?1, '%')) AND it.isAvailable = true")
-//    List<Item> findAllByTextContaining(String text);
     Page<Item> findAllByTextContaining(String text, Pageable pageable);
+
+    List<Item> findAllByRequestId(Integer requestId);
 
 }
