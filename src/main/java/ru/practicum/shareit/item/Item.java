@@ -43,9 +43,6 @@ public class Item {
     @NotNull(message = "Не указана доступность вещи")
     private Boolean isAvailable;
 
-//    @ManyToOne(fetch = FetchType.LAZY)                                      // связь когда множество данных объектов связаны с одним другим
-//    @JoinColumn(name = "request_id")
-//    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @Column(name = "request_id")
     @ToString.Exclude
     private Integer requestId;
@@ -56,6 +53,13 @@ public class Item {
         this.description = description;
         this.isAvailable = isAvailable;
         this.requestId = requestId;
+    }
+
+    public Item(Integer id, String name, String description, Boolean isAvailable) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.isAvailable = isAvailable;
     }
 
     @Override

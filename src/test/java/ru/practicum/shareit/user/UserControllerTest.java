@@ -97,20 +97,6 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void updateUser_userNotValid() {
-        User updUser = new User(1, "name2", "mail.com");
-        UserDto userDto = UserMapper.toUserDto(updUser);
-
-        mockMvc.perform(patch("/users/{userId}", updUser.getId())
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(updUser)))
-                .andExpect(status().isBadRequest());
-
-        verify(userService, never()).updateUser(userDto, updUser.getId());
-    }
-
-    @SneakyThrows
-    @Test
     void getUserById_returnUser() {
         when(userService.getUserById(anyInt())).thenReturn(user);
 

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.comment.CommentDto;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ public class ItemController {
 
     @PostMapping
     public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                           @RequestBody ItemDto itemDto) {
+                           @Valid @RequestBody ItemDto itemDto) {
         return itemService.addItem(userId, itemDto);
     }
 
