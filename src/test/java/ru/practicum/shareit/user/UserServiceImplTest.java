@@ -21,8 +21,7 @@ class UserServiceImplTest {
 
     @Mock                                            // создание мока для тестового класса
     private UserRepository userRepository;
-
-    @InjectMocks                                    // поле для внедрения моков (объект тестируемого класса)
+    @InjectMocks                                     // поле для внедрения моков (объект тестируемого класса)
     private UserServiceImpl userService;
 
     @Test
