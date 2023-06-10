@@ -7,10 +7,9 @@ import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-/*@JsonTest
+@JsonTest
 public class UserDtoJsonTest {
 
     @Autowired
@@ -18,14 +17,15 @@ public class UserDtoJsonTest {
 
     @SneakyThrows
     @Test
-    void testUserDto() {
-//        UserDto userDto = UserDto.builder().name("name").email("e@mail.com").build();
-        UserDto userDto = new UserDto(1, "name", "e@mail.com");
-
+    void testUserDto_returnUserDto() {
+        UserDto userDto = UserDto.builder().name("name").email("e@mail.com").build();
         JsonContent<UserDto> result = json.write(userDto);
 
-        result.extractingJsonPathNumberValue
-        assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-
+        assertThat(result).hasJsonPath("$.id");
+        assertThat(result).hasJsonPath("$.name");
+        assertThat(result).hasJsonPath("$.email");
+        assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo("name");
+        assertThat(result).extractingJsonPathStringValue("$.email").isEqualTo("e@mail.com");
     }
-}*/
+
+}

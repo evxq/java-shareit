@@ -34,7 +34,7 @@ class BookingServiceIntTest {
     private BookingItemDto bookingItemDto;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         userDto1 = userService.createUser(
                 UserDto.builder().name("name").email("e@mail.com").build());
         userDto2 = userService.createUser(
