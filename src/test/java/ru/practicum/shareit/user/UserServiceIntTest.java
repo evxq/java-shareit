@@ -59,11 +59,11 @@ public class UserServiceIntTest {
 
     @Test
     void getUserById_returnUser() {
-        UserDto updUserDto = userService.createUser(userDto);
+        UserDto userDto = userService.createUser(this.userDto);
 
-        User userById = userService.getUserById(updUserDto.getId());
+        User userById = userService.getUserById(userDto.getId());
         TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.id = :id", User.class);
-        User user = query.setParameter("id", updUserDto.getId()).getSingleResult();
+        User user = query.setParameter("id", userDto.getId()).getSingleResult();
 
         assertThat(userById.getId(), notNullValue());
         assertThat(userById.getName(), equalTo(user.getName()));
