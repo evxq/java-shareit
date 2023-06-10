@@ -51,7 +51,7 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
-    void addRequest_returnRequest() {
+    void addRequest_returnRequestDto() {
         when(userService.getUserById(anyInt())).thenReturn(user1);
         when(itemRequestRepository.save(itemRequest)).thenReturn(itemRequest);
 
@@ -63,7 +63,7 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
-    void getMyRequests() {
+    void getMyRequests_returnRequestDtoList() {
         itemRequestDto.setItems(List.of());
         List<ItemRequestDto> itemRequestList = List.of(itemRequestDto);
         when(userService.getUserById(anyInt())).thenReturn(user1);
@@ -75,7 +75,7 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
-    void getRequestById() {
+    void getRequestById_returnRequestDto() {
         itemRequestDto.setItems(List.of());
         when(userService.getUserById(anyInt())).thenReturn(user1);
         when(itemRequestRepository.findById(anyInt())).thenReturn(Optional.of(itemRequest));
@@ -86,7 +86,7 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
-    void getAllRequests() {
+    void getAllRequests_returnRequestDtoList() {
         int from = 0;
         int size = 5;
         itemRequestDto.setItems(List.of());

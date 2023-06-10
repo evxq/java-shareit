@@ -157,7 +157,7 @@ class ItemControllerTest {
 
     @SneakyThrows
     @Test
-    void addComment() {
+    void addComment_returnComment() {
         CommentDto commentDto = CommentDto.builder().id(1).text("comment").authorName("author").created(LocalDateTime.now()).build();
         when(itemService.addComment(anyInt(), anyInt(), eq(commentDto))).thenReturn(commentDto);
 
