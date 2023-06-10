@@ -45,17 +45,6 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     Page<Booking> findAllByBookerIdAndStatusOrderByStartDesc(Integer userId, BookingStatus status, Pageable page);                        // WAITING / REJECTED
 
-    //    List<Booking> getBookingsForOwner(Integer userId);
-    //    List<Booking> getBookingsForOwnerByStatus(Integer userId, String state);
-    //    List<Booking> getBookingsForOwnerCurrent(Integer userId, LocalDateTime start, LocalDateTime end);
-    //    List<Booking> getBookingsForOwnerPast(Integer userId, LocalDateTime end);
-    //    List<Booking> getBookingsForOwnerFuture(Integer userId, LocalDateTime start);
-    //    List<Booking> findAllByBookerIdOrderByStartDesc(Integer userId);                                                                        // ALL for user
-    //    List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(Integer userId, LocalDateTime start, LocalDateTime end);       // CURRENT for user
-    //    List<Booking> findAllByBookerIdAndEndBeforeOrderByStartDesc(Integer userId, LocalDateTime end);                                         // PAST
-    //    List<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(Integer userId, LocalDateTime start);                                      // FUTURE
-    //    List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(Integer userId, BookingStatus status);                                         // WAITING / REJECTED
-
     String BOOKING_FOR_ITEM = "SELECT bk " +
             "FROM Booking bk " +
             "JOIN bk.item it " +

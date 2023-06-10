@@ -29,13 +29,4 @@ public class ItemMapper {
                 .requestId(item.getRequestId()).build();
     }
 
-    public static Item toItem(ItemDtoBooking itemDtoBooking) {
-        return new Item(
-                itemDtoBooking.getId(),
-                itemDtoBooking.getName(),
-                itemDtoBooking.getDescription(),
-                itemDtoBooking.getAvailable(),
-                itemDtoBooking.getRequestId());
-    }
-
 }
