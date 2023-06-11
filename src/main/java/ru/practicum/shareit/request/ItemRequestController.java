@@ -1,15 +1,18 @@
 package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exceptions.ValidationException;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
  * TODO Sprint add-item-requests.
  */
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/requests")
@@ -36,11 +39,11 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                                               @RequestParam(required = false, defaultValue = "0") int from,
-                                               @RequestParam(required = false, defaultValue = "10") int size) {
-        if (from < 0 || size < 1) {
+                                               @PositiveOrZero @RequestParam(required = false, defaultValue = "0") int from,
+                                               @Positive @RequestParam(required = false, defaultValue = "10") int size) {
+        /*if (from < 0 || size < 1) {
             throw new ValidationException("Некорректные параметры пагинации");
-        }
+        }*/
         return itemRequestService.getAllRequests(userId, from, size);
     }
 

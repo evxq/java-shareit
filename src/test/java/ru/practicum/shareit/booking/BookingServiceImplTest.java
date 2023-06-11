@@ -9,6 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.user.User;
@@ -21,9 +23,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class BookingServiceImplTest {
@@ -43,7 +45,7 @@ class BookingServiceImplTest {
     private BookingDto bookingDto;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         user1 = new User(1, "name", "e@mail.ya");
         user2 = new User(2, "name2", "e2@mail.ya");
         item = new Item(1, "name", "desc", true);
@@ -69,6 +71,31 @@ class BookingServiceImplTest {
     }
 
     @Test
+    void createBooking_selfBooking_returnException() {
+        BookingItemDto bookingItemDto = BookingMapper.toBookingItemDto(booking);
+        when(userService.getUserById(anyInt())).thenReturn(user1);
+        when(itemService.getItemById(any())).thenReturn(item);
+
+        assertThrows(
+                NotFoundException.class,
+                () -> bookingService.createBooking(2, bookingItemDto));
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void createBooking_notAvailable_returnException() {
+        item.setIsAvailable(false);
+        BookingItemDto bookingItemDto = BookingMapper.toBookingItemDto(booking);
+        when(userService.getUserById(anyInt())).thenReturn(user2);
+        when(itemService.getItemById(any())).thenReturn(item);
+
+        assertThrows(
+                ValidationException.class,
+                () -> bookingService.createBooking(2, bookingItemDto));
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
     void responseToBooking_returnApprovedBooking() {
         when(bookingRepository.findById(anyInt())).thenReturn(Optional.of(booking));
         when(bookingRepository.save(any())).thenReturn(booking);
@@ -82,6 +109,44 @@ class BookingServiceImplTest {
     }
 
     @Test
+    void responseToBooking_returnRejectedBooking() {
+        when(bookingRepository.findById(anyInt())).thenReturn(Optional.of(booking));
+        when(bookingRepository.save(any())).thenReturn(booking);
+
+        BookingDto newBookingDto = bookingService.responseToBooking(1, 1, false);
+        booking.setStatus(BookingStatus.REJECTED);
+        BookingDto bookingDto = BookingMapper.toBookingDto(booking);
+
+        assertEquals(bookingDto, newBookingDto);
+        verify(bookingRepository).save(booking);
+    }
+
+    @Test
+    void responseToBooking_notOwnerResponse_returnException() {
+        when(bookingRepository.findById(anyInt())).thenReturn(Optional.of(booking));
+
+        NotFoundException notOwnerResponse = assertThrows(
+                NotFoundException.class,
+                () -> bookingService.responseToBooking(2, 1, true));
+        assertEquals("Только владелец объекта может подтверждать бронирование", notOwnerResponse.getMessage());
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void responseToBooking_repeatBooking_returnException() {
+        when(bookingRepository.findById(anyInt())).thenReturn(Optional.of(booking));
+        when(bookingRepository.save(any())).thenReturn(booking);
+
+        bookingService.responseToBooking(1, 1, true);
+
+        ValidationException repeatBooking = assertThrows(
+                ValidationException.class,
+                () -> bookingService.responseToBooking(1, 1, true));
+        assertEquals("Бронирование уже подтверждено", repeatBooking.getMessage());
+        verify(bookingRepository, atMostOnce()).save(any());
+    }
+
+    @Test
     void getBookingById_returnBookingDto() {
         when(bookingRepository.findById(anyInt())).thenReturn(Optional.of(booking));
         when(userService.getUserById(anyInt())).thenReturn(user1);
@@ -89,6 +154,17 @@ class BookingServiceImplTest {
         BookingDto newBookingDto = bookingService.getBookingById(1, 1);
 
         assertEquals(bookingDto, newBookingDto);
+    }
+
+    @Test
+    void getBookingById_wrongUser_returnException() {
+        when(bookingRepository.findById(anyInt())).thenReturn(Optional.of(booking));
+        when(userService.getUserById(anyInt())).thenReturn(user1);
+
+        NotFoundException repeatBooking = assertThrows(
+                NotFoundException.class,
+                () -> bookingService.getBookingById(5, 1));
+        assertEquals("Только букер или владелец объекта может просматривать бронирование", repeatBooking.getMessage());
     }
 
     @Test
@@ -124,6 +200,14 @@ class BookingServiceImplTest {
     }
 
     @Test
+    void getBookingsForUser_wrongState_returnException() {
+        ValidationException wrongState = assertThrows(
+                ValidationException.class,
+                () -> bookingService.getBookingsForUser(1, "BELIBERDA", 0, 5));
+        assertEquals("Unknown state: UNSUPPORTED_STATUS", wrongState.getMessage());
+    }
+
+    @Test
     void getBookingsForOwner_returnBookingsList() {
         int from = 0;
         int size = 5;
@@ -153,6 +237,14 @@ class BookingServiceImplTest {
         assertEquals(pastListBookingDto, listBookingDto);
         assertEquals(futureListBookingDto, listBookingDto);
         assertEquals(statusListBookingDto, listBookingDto);
+    }
+
+    @Test
+    void getBookingsForOwner_wrongState_returnException() {
+        ValidationException wrongState = assertThrows(
+                ValidationException.class,
+                () -> bookingService.getBookingsForOwner(1, "BELIBERDA", 0, 5));
+        assertEquals("Unknown state: UNSUPPORTED_STATUS", wrongState.getMessage());
     }
 
 }

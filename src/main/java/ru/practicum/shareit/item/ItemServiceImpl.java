@@ -32,7 +32,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
 
     @Override
-    public ItemDto addItem(Integer userId, ItemDto itemDto) {                       // ДОБАВИТЬ СВЯЗЬ С REQUEST
+    public ItemDto addItem(Integer userId, ItemDto itemDto) {
         if (itemDto.getName() == null || itemDto.getName().isEmpty()
                 || itemDto.getDescription() == null || itemDto.getAvailable() == null) {
             log.warn("Недостаточно данных для создания вещи");

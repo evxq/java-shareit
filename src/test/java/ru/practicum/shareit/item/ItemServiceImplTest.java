@@ -10,9 +10,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.comment.CommentMapper;
@@ -26,8 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
@@ -50,7 +51,7 @@ public class ItemServiceImplTest {
     @BeforeEach
     void setup() {
         user = new User(1, "name", "e@mail.ya");
-        item = new Item(1, "name", "desc", true);
+        item = new Item(1, "name", "desc", true, 1);
     }
 
     @Test
@@ -66,10 +67,21 @@ public class ItemServiceImplTest {
     }
 
     @Test
+    void addItem_nullName_returnException() {
+        item.setName(null);
+        ItemDto itemDto = ItemMapper.toItemDto(item);
+
+        ValidationException noNameItem = assertThrows(
+                ValidationException.class,
+                () -> itemService.addItem(user.getId(), itemDto));
+        assertEquals("Недостаточно данных для создания вещи", noNameItem.getMessage());
+    }
+
+    @Test
     void updateItem_returnUpdatedItem() {
         int itemId = 1;
         item.setOwner(user);
-        Item updItem = new Item(itemId, "newname", "newdesc", false);
+        Item updItem = new Item(itemId, "newname", "newdesc", false, 1);
         when(itemRepository.getReferenceById(itemId)).thenReturn(item);
         when(itemRepository.save(item)).thenReturn(item);
         ItemDto itemDto = ItemMapper.toItemDto(updItem);
@@ -88,6 +100,18 @@ public class ItemServiceImplTest {
         assertThrows(
                 NotFoundException.class,
                 () -> itemService.updateItem(1, 1, itemDto));
+        verify(itemRepository, never()).save(item);
+    }
+
+    @Test
+    void updateItem_wrongOwner() {
+        item.setOwner(user);
+        ItemDto itemDto = ItemMapper.toItemDto(item);
+        when(itemRepository.getReferenceById(anyInt())).thenReturn(item);
+
+        assertThrows(
+                NotFoundException.class,
+                () -> itemService.updateItem(2, 1, itemDto));
         verify(itemRepository, never()).save(item);
     }
 
@@ -152,6 +176,33 @@ public class ItemServiceImplTest {
     }
 
     @Test
+    void getItemsByOwner_notEmptyBookings_returnOwnerItemList() {
+        int from = 0;
+        int size = 5;
+        Booking booking = new Booking(1,
+                LocalDateTime.now().minus(3, ChronoUnit.HOURS),
+                LocalDateTime.now().minus(2, ChronoUnit.HOURS),
+                item, user, BookingStatus.APPROVED);
+        List<Item> itemList = List.of(item);
+        PageRequest page = PageRequest.of(from, size);
+        Page<Item> itemPage = new PageImpl<>(itemList);
+        when(itemRepository.findAllByOwnerId(anyInt(), eq(page))).thenReturn(itemPage);
+        when(bookingRepository.findLastBookingForItem(anyInt(), any())).thenReturn(List.of(booking));
+        when(bookingRepository.findNextBookingForItem(anyInt(), any())).thenReturn(List.of(booking));
+        when(commentRepository.findAllByItemId(anyInt())).thenReturn(List.of());
+
+        List<ItemDtoBooking> list = itemService.getItemsByOwner(1, from, size);
+        List<ItemDtoBooking> list2 = itemList.stream()
+                .map(ItemMapper::toItemDtoBooking)
+                .peek(item -> item.setComments(List.of()))
+                .peek(item -> item.setLastBooking(BookingMapper.toBookingItemDto(booking)))
+                .peek(item -> item.setNextBooking(BookingMapper.toBookingItemDto(booking)))
+                .collect(Collectors.toList());
+
+        assertEquals(list, list2);
+    }
+
+    @Test
     void searchItemByText_returnItemList() {
         int from = 0;
         int size = 5;
@@ -169,6 +220,17 @@ public class ItemServiceImplTest {
     }
 
     @Test
+    void searchItemByText_emptyText_returnEmptyList() {
+        int from = 0;
+        int size = 5;
+
+        List<ItemDto> list = itemService.searchItemByText("", from, size);
+
+        assertTrue(list.isEmpty());
+        verify(itemRepository, never()).findAllByTextContaining(anyString(), any());
+    }
+
+    @Test
     void addComment_returnComment() {
         Booking booking = new Booking(1,
                 LocalDateTime.now().minus(3, ChronoUnit.HOURS),
@@ -183,6 +245,30 @@ public class ItemServiceImplTest {
         CommentDto commentDto1 = itemService.addComment(1, 1, commentDto);
 
         assertEquals(commentDto, commentDto1);
+    }
+
+    @Test
+    void addComment_emptyComment_returnException() {
+        Comment comment = new Comment(1, "", item, user);
+        CommentDto commentDto = CommentMapper.toCommentDto(comment);
+
+        ValidationException noNameItem = assertThrows(
+                ValidationException.class,
+                () -> itemService.addComment(1, 1, commentDto));
+        assertEquals("Комментарий не может быть пустым", noNameItem.getMessage());
+    }
+
+    @Test
+    void addComment_emptyBooking_returnException() {
+        Comment comment = new Comment(1, "comment", item, user);
+        CommentDto commentDto = CommentMapper.toCommentDto(comment);
+        when(bookingRepository.findBookingByUserAndItem(anyInt(), anyInt()))
+                .thenReturn(List.of());
+
+        ValidationException noNameItem = assertThrows(
+                ValidationException.class,
+                () -> itemService.addComment(1, 1, commentDto));
+        assertEquals("Пользователь не может оставить комментарий для объекта, который не использовал", noNameItem.getMessage());
     }
 
 }

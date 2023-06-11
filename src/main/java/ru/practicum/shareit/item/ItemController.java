@@ -1,17 +1,20 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.comment.CommentDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
  * TODO Sprint add-controllers.
  */
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/items")
@@ -40,21 +43,15 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDtoBooking> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                                                @RequestParam(required = false, defaultValue = "0") int from,
-                                                @RequestParam(required = false, defaultValue = "10") int size) {
-        if (from < 0 || size < 1) {
-            throw new ValidationException("Некорректные параметры пагинации");
-        }
+                                                @PositiveOrZero @RequestParam(required = false, defaultValue = "0") int from,
+                                                @Positive @RequestParam(required = false, defaultValue = "10") int size) {
         return itemService.getItemsByOwner(userId, from, size);
     }
 
     @GetMapping("/search")
     public List<ItemDto> searchItemByText(@RequestParam String text,
-                                          @RequestParam(required = false, defaultValue = "0") int from,
-                                          @RequestParam(required = false, defaultValue = "10") int size) {
-        if (from < 0 || size < 1) {
-            throw new ValidationException("Некорректные параметры пагинации");
-        }
+                                          @PositiveOrZero @RequestParam(required = false, defaultValue = "0") int from,
+                                          @Positive @RequestParam(required = false, defaultValue = "10") int size) {
         return itemService.searchItemByText(text, from, size);
     }
 

@@ -69,11 +69,11 @@ public class ItemServiceIntTest {
 
     @Test
     void getItemById_returnItem() {
-        ItemDto ItemDto = itemService.addItem(userDto.getId(), itemDto);
+        ItemDto itemDto = itemService.addItem(userDto.getId(), this.itemDto);
 
-        Item itemById = itemService.getItemById(ItemDto.getId());
+        Item itemById = itemService.getItemById(itemDto.getId());
         TypedQuery<Item> query = em.createQuery("SELECT i FROM Item i WHERE i.id = :id", Item.class);
-        Item item = query.setParameter("id", ItemDto.getId()).getSingleResult();
+        Item item = query.setParameter("id", itemDto.getId()).getSingleResult();
 
         assertThat(itemById.getId(), notNullValue());
         assertThat(itemById.getName(), equalTo(item.getName()));
@@ -83,11 +83,11 @@ public class ItemServiceIntTest {
 
     @Test
     void getItemDtoBookingById_returnItemDtoBooking() {
-        ItemDto ItemDto = itemService.addItem(userDto.getId(), itemDto);
+        ItemDto itemDto = itemService.addItem(userDto.getId(), this.itemDto);
 
-        ItemDtoBooking itemDtoBookingById = itemService.getItemDtoBookingById(ItemDto.getId(), userDto.getId());
+        ItemDtoBooking itemDtoBookingById = itemService.getItemDtoBookingById(itemDto.getId(), userDto.getId());
         TypedQuery<Item> query = em.createQuery("SELECT i FROM Item i WHERE i.id = :id", Item.class);
-        Item item = query.setParameter("id", ItemDto.getId()).getSingleResult();
+        Item item = query.setParameter("id", itemDto.getId()).getSingleResult();
 
         assertThat(itemDtoBookingById.getId(), notNullValue());
         assertThat(itemDtoBookingById.getName(), equalTo(item.getName()));

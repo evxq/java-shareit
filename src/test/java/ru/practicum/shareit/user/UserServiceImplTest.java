@@ -54,14 +54,12 @@ class UserServiceImplTest {
     @Test
     void updateUser_wrongUser() {
         int userId = 1;
-        User user = new User(userId, "name", "e@mail.ya");
-        doThrow(NotFoundException.class)
-                .when(userRepository).findById(userId);
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(
                 NotFoundException.class,
                 () -> userService.updateUser(new UserDto(), userId));
-        verify(userRepository, never()).save(user);
+        verify(userRepository, never()).save(any());
     }
 
     @Test
