@@ -15,7 +15,6 @@ import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,10 +24,11 @@ import static org.hamcrest.Matchers.*;
 @Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class ItemServiceIntTest {
+public class ItemServiceImplIntegrationTest {
 
     private final EntityManager em;
     private final ItemService itemService;
+    private final ItemRepository itemRepository;
     private final UserService userService;
     private final BookingService bookingService;
     private ItemDto itemDto;
@@ -42,9 +42,9 @@ public class ItemServiceIntTest {
 
     @Test
     void addItem_returnItem() {
-        itemService.addItem(userDto.getId(), itemDto);
-        TypedQuery<Item> query = em.createQuery("SELECT i FROM Item i WHERE i.name = :name", Item.class);
-        Item item = query.setParameter("name", itemDto.getName()).getSingleResult();
+        ItemDto addedItemDto = itemService.addItem(userDto.getId(), itemDto);
+        int id = addedItemDto.getId();
+        Item item = itemRepository.getReferenceById(id);
 
         assertThat(item.getId(), notNullValue());
         assertThat(item.getName(), equalTo(itemDto.getName()));
@@ -55,11 +55,11 @@ public class ItemServiceIntTest {
     @Test
     void updateItem_returnUpdatedItem() {
         ItemDto createdItemDto = itemService.addItem(userDto.getId(), itemDto);
-        ItemDto updItemDto = ItemDto.builder().name("newName").description("newDesc").available(true).build();
+        ItemDto itemDto = ItemDto.builder().name("newName").description("newDesc").available(true).build();
+        int id = createdItemDto.getId();
 
-        itemService.updateItem(userDto.getId(), createdItemDto.getId(), updItemDto);
-        TypedQuery<Item> query = em.createQuery("SELECT i FROM Item i WHERE i.name = :name", Item.class);
-        Item item = query.setParameter("name", updItemDto.getName()).getSingleResult();
+        ItemDto updItemDto = itemService.updateItem(userDto.getId(), id, itemDto);
+        Item item = itemRepository.getReferenceById(id);
 
         assertThat(item.getId(), notNullValue());
         assertThat(item.getName(), equalTo(updItemDto.getName()));
@@ -70,10 +70,10 @@ public class ItemServiceIntTest {
     @Test
     void getItemById_returnItem() {
         ItemDto itemDto = itemService.addItem(userDto.getId(), this.itemDto);
+        int id = itemDto.getId();
 
-        Item itemById = itemService.getItemById(itemDto.getId());
-        TypedQuery<Item> query = em.createQuery("SELECT i FROM Item i WHERE i.id = :id", Item.class);
-        Item item = query.setParameter("id", itemDto.getId()).getSingleResult();
+        Item itemById = itemService.getItemById(id);
+        Item item = itemRepository.getReferenceById(id);
 
         assertThat(itemById.getId(), notNullValue());
         assertThat(itemById.getName(), equalTo(item.getName()));
@@ -84,10 +84,10 @@ public class ItemServiceIntTest {
     @Test
     void getItemDtoBookingById_returnItemDtoBooking() {
         ItemDto itemDto = itemService.addItem(userDto.getId(), this.itemDto);
+        int id = itemDto.getId();
 
-        ItemDtoBooking itemDtoBookingById = itemService.getItemDtoBookingById(itemDto.getId(), userDto.getId());
-        TypedQuery<Item> query = em.createQuery("SELECT i FROM Item i WHERE i.id = :id", Item.class);
-        Item item = query.setParameter("id", itemDto.getId()).getSingleResult();
+        ItemDtoBooking itemDtoBookingById = itemService.getItemDtoBookingById(id, userDto.getId());
+        Item item = itemRepository.getReferenceById(id);
 
         assertThat(itemDtoBookingById.getId(), notNullValue());
         assertThat(itemDtoBookingById.getName(), equalTo(item.getName()));

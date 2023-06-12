@@ -41,14 +41,14 @@ public class Booking {
     private LocalDateTime end;
 
     @NotNull(message = "Нужно указать объект бронирования")
-    @ManyToOne(fetch = FetchType.LAZY)                                          // связь когда множество данных объектов связаны с одним другим
+    @ManyToOne(fetch = FetchType.LAZY)                                          // связь когда множество this объектов связаны с одним объектом из данного поля
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "item_id")
     @ToString.Exclude
     private Item item;
 
     @NotNull(message = "Нужно указать пользователя-инициатора бронирования")
-    @ManyToOne(fetch = FetchType.LAZY)                                          // связь когда множество данных объектов связаны с одним другим
+    @ManyToOne(fetch = FetchType.LAZY)                                          // связь когда множество this объектов связаны с одним объектом из данного поля
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "booker_id")
     @ToString.Exclude

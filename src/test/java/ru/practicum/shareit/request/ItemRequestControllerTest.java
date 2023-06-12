@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,7 +39,8 @@ class ItemRequestControllerTest {
 
     @BeforeEach
     void setUp() {
-        ItemRequest itemRequest = new ItemRequest(1, "request", LocalDateTime.now().withNano(1), 1);
+        User user = new User(1, "name", "e@mail.ya");
+        ItemRequest itemRequest = new ItemRequest(1, "request", LocalDateTime.now().withNano(1), user);
         itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
     }
 

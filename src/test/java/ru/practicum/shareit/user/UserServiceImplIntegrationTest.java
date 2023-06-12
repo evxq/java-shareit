@@ -5,12 +5,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
-
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -20,10 +18,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class UserServiceIntTest {
+public class UserServiceImplIntegrationTest {
 
     private final EntityManager em;
     private final UserService userService;
+    private final UserRepository userRepository;
     private UserDto userDto;
 
     @BeforeEach
@@ -33,10 +32,9 @@ public class UserServiceIntTest {
 
     @Test
     void createUser_returnSavedUser() {
-        userService.createUser(userDto);
-
-        TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class);
-        User user = query.setParameter("email", userDto.getEmail()).getSingleResult();
+        UserDto createdUserDto = userService.createUser(userDto);
+        int id = createdUserDto.getId();
+        User user = userRepository.getReferenceById(id);
 
         assertThat(user.getId(), notNullValue());
         assertThat(user.getName(), equalTo(userDto.getName()));
@@ -46,11 +44,11 @@ public class UserServiceIntTest {
     @Test
     void updateUser_returnUpdatedUser() {
         UserDto createdUserDto = userService.createUser(userDto);
-        UserDto updUserDto = UserDto.builder().name("newName").email("new@mail.com").build();
+        UserDto userDto = UserDto.builder().name("newName").email("new@mail.com").build();
+        int id = createdUserDto.getId();
 
-        userService.updateUser(updUserDto, createdUserDto.getId());
-        TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class);
-        User user = query.setParameter("email", updUserDto.getEmail()).getSingleResult();
+        UserDto updUserDto = userService.updateUser(userDto, id);
+        User user = userRepository.getReferenceById(id);
 
         assertThat(user.getId(), notNullValue());
         assertThat(user.getName(), equalTo(updUserDto.getName()));
@@ -60,10 +58,10 @@ public class UserServiceIntTest {
     @Test
     void getUserById_returnUser() {
         UserDto userDto = userService.createUser(this.userDto);
+        int id = userDto.getId();
 
-        User userById = userService.getUserById(userDto.getId());
-        TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.id = :id", User.class);
-        User user = query.setParameter("id", userDto.getId()).getSingleResult();
+        User userById = userService.getUserById(id);
+        User user = userRepository.getReferenceById(id);
 
         assertThat(userById.getId(), notNullValue());
         assertThat(userById.getName(), equalTo(user.getName()));
@@ -93,12 +91,12 @@ public class UserServiceIntTest {
     @Test
     void deleteUser() {
         UserDto userDto = userService.createUser(this.userDto);
+        int id = userDto.getId();
 
-        userService.deleteUser(userDto.getId());
-        TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.id = :id", User.class);
+        userService.deleteUser(id);
 
-        assertThrows(NoResultException.class,
-                () -> query.setParameter("id", userDto.getId()).getSingleResult());
+        assertThrows(JpaObjectRetrievalFailureException.class,
+                () -> userRepository.getReferenceById(id));
     }
 
 }

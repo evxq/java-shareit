@@ -39,11 +39,8 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                                               @PositiveOrZero @RequestParam(required = false, defaultValue = "0") int from,
-                                               @Positive @RequestParam(required = false, defaultValue = "10") int size) {
-        /*if (from < 0 || size < 1) {
-            throw new ValidationException("Некорректные параметры пагинации");
-        }*/
+                                               @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                               @Positive @RequestParam(defaultValue = "10") int size) {
         return itemRequestService.getAllRequests(userId, from, size);
     }
 

@@ -12,7 +12,6 @@ import ru.practicum.shareit.user.UserDto;
 import ru.practicum.shareit.user.UserService;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,10 +21,11 @@ import static org.hamcrest.Matchers.*;
 @Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class BookingServiceIntTest {
+class BookingServiceImplIntegrationTest {
 
     private final EntityManager em;
     private final BookingService bookingService;
+    private final BookingRepository bookingRepository;
     private final UserService userService;
     private final ItemService itemService;
     private UserDto userDto1;
@@ -45,13 +45,13 @@ class BookingServiceIntTest {
                 LocalDateTime.now().plusNanos(100_000_000),
                 LocalDateTime.now().plusNanos(200_000_000),
                 itemDto.getId(), userDto2.getId(), "APPROVED");
-        bookingDto = bookingService.createBooking(userDto2.getId(), bookingItemDto);
     }
 
     @Test
     void createBooking_returnBooking() {
-        TypedQuery<Booking> query = em.createQuery("SELECT b FROM Booking b WHERE b.id = :id", Booking.class);
-        Booking booking = query.setParameter("id", bookingDto.getId()).getSingleResult();
+        bookingDto = bookingService.createBooking(userDto2.getId(), bookingItemDto);
+        int id = bookingDto.getId();
+        Booking booking = bookingRepository.getReferenceById(id);
 
         assertThat(booking.getId(), notNullValue());
         assertThat(booking.getStart(), equalTo(bookingItemDto.getStart()));
@@ -62,9 +62,11 @@ class BookingServiceIntTest {
 
     @Test
     void responseToBooking_returnApprovedBooking() {
-        BookingDto approvedBookingDto = bookingService.responseToBooking(userDto1.getId(), bookingDto.getId(), true);
-        TypedQuery<Booking> query = em.createQuery("SELECT b FROM Booking b WHERE b.id = :id", Booking.class);
-        Booking booking = query.setParameter("id", bookingDto.getId()).getSingleResult();
+        bookingDto = bookingService.createBooking(userDto2.getId(), bookingItemDto);
+        int id = bookingDto.getId();
+        Booking booking = bookingRepository.getReferenceById(id);
+
+        BookingDto approvedBookingDto = bookingService.responseToBooking(userDto1.getId(), id, true);
 
         assertThat(booking.getId(), notNullValue());
         assertThat(booking.getStart(), equalTo(approvedBookingDto.getStart()));
@@ -76,9 +78,11 @@ class BookingServiceIntTest {
 
     @Test
     void getBookingById_returnBookingDto() {
-        BookingDto bookingById = bookingService.getBookingById(userDto1.getId(), bookingDto.getId());
-        TypedQuery<Booking> query = em.createQuery("SELECT b FROM Booking b WHERE b.id = :id", Booking.class);
-        Booking booking = query.setParameter("id", bookingDto.getId()).getSingleResult();
+        bookingDto = bookingService.createBooking(userDto2.getId(), bookingItemDto);
+        int id = bookingDto.getId();
+        Booking booking = bookingRepository.getReferenceById(id);
+
+        BookingDto bookingById = bookingService.getBookingById(userDto1.getId(), id);
 
         assertThat(bookingById.getId(), notNullValue());
         assertThat(bookingById.getStart(), equalTo(booking.getStart()));
@@ -90,6 +94,7 @@ class BookingServiceIntTest {
 
     @Test
     void getBookingsForUser_returnBookingsList() {
+        bookingDto = bookingService.createBooking(userDto2.getId(), bookingItemDto);
         int from = 0;
         int size = 5;
 
@@ -113,6 +118,7 @@ class BookingServiceIntTest {
 
     @Test
     void getBookingsForOwner_returnBookingsList() {
+        bookingDto = bookingService.createBooking(userDto2.getId(), bookingItemDto);
         int from = 0;
         int size = 5;
 

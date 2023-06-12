@@ -10,6 +10,7 @@ import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.ItemDto;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
 import javax.validation.ConstraintViolationException;
@@ -29,12 +30,14 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemRequestDto addRequest(Integer userId, ItemRequestDto itemRequestDto) {
-        userService.getUserById(userId);
+        User user = userService.getUserById(userId);
         itemRequestDto.setRequesterId(userId);
         itemRequestDto.setCreated(LocalDateTime.now());
         ItemRequest savedRequest;
         try {
-            savedRequest = itemRequestRepository.save(ItemRequestMapper.toItemRequest(itemRequestDto));
+            ItemRequest request = ItemRequestMapper.toItemRequest(itemRequestDto);
+            request.setRequester(user);
+            savedRequest = itemRequestRepository.save(request);
         } catch (ConstraintViolationException e) {
             log.info("Введены некорректные данные для создания запроса");
             throw new ValidationException("Некорректные данные для создания запроса");
@@ -74,10 +77,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestDto> getAllRequests(Integer userId, int from, int size) {
         userService.getUserById(userId);
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
         log.info("Пользователем id={} вызван список других запросов", userId);
 
-        return itemRequestRepository.findAllByRequesterIdNotOrderByCreatedDesc(userId, page)
+        return itemRequestRepository.findAllByRequesterIdNotOrderByCreatedDesc(userId, setPage(from, size))
                 .stream()
                 .map(ItemRequestMapper::toItemRequestDto)
                 .peek(itemRequestDto -> itemRequestDto.setItems(getRequestItems(itemRequestDto.getId())))
@@ -89,6 +91,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
+    }
+
+    private static PageRequest setPage(int from, int size) {
+        return PageRequest.of(from > 0 ? from / size : 0, size);
     }
 
 }

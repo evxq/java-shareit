@@ -33,7 +33,7 @@ public class Item {
     @NotNull(message = "Не указано описание вещи")
     private String description;                                             // @Column не указан
 
-    @ManyToOne(fetch = FetchType.LAZY)                                      // связь когда множество данных объектов связаны с одним другим
+    @ManyToOne(fetch = FetchType.LAZY)                                      // связь когда множество this объектов связаны с одним объектом из данного поля
     @JoinColumn(name = "owner_id")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ToString.Exclude

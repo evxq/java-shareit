@@ -41,7 +41,7 @@ class ItemRequestServiceImplTest {
     @BeforeEach
     void setup() {
         user1 = new User(1, "name", "e@mail.ya");
-        itemRequest = new ItemRequest(1, "request", LocalDateTime.MIN, 1);
+        itemRequest = new ItemRequest(1, "request", LocalDateTime.MIN, user1);
         itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
     }
 

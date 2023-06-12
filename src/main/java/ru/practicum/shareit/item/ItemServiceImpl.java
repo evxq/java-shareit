@@ -98,10 +98,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDtoBooking> getItemsByOwner(Integer userId, int from, int size) {
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
         log.info("Вызван список вещей для пользователя id ={}", userId);
 
-        return itemRepository.findAllByOwnerId(userId, page)
+        return itemRepository.findAllByOwnerId(userId, setPage(from, size))
                 .stream()
                 .map(this::setCommentsToItem)
                 .map(this::setBookingsToItem)
@@ -151,10 +150,9 @@ public class ItemServiceImpl implements ItemService {
             log.warn("Вызван поиск вещей для пустой строки");
             return new ArrayList<>();
         }
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
         log.info("Вызван список вещей по строке поиска \"{}\"", text);
 
-        return itemRepository.findAllByTextContaining(text.toLowerCase(), page)
+        return itemRepository.findAllByTextContaining(text.toLowerCase(), setPage(from, size))
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
@@ -182,6 +180,10 @@ public class ItemServiceImpl implements ItemService {
 
             return CommentMapper.toCommentDto(commentRepository.save(comment));
         }
+    }
+
+    private static PageRequest setPage(int from, int size) {
+        return PageRequest.of(from > 0 ? from / size : 0, size);
     }
 
 }

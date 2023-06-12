@@ -89,7 +89,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getBookingsForUser(Integer userId, String state, int from, int size) {
         userService.getUserById(userId);
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+        PageRequest page = setPage(from, size);
         Page<Booking> userBookings;
         switch (state) {
             case "ALL":
@@ -120,7 +120,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getBookingsForOwner(Integer userId, String state, int from, int size) {
         userService.getUserById(userId);
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+        PageRequest page = setPage(from, size);
         Page<Booking> ownerBookings;
         switch (state) {
             case "ALL":
@@ -162,6 +162,10 @@ public class BookingServiceImpl implements BookingService {
             log.warn("Даты бронирования не корректны");
             throw new ValidationException("Даты бронирования не корректны");
         }
+    }
+
+    private static PageRequest setPage(int from, int size) {
+        return PageRequest.of(from > 0 ? from / size : 0, size);
     }
 
 }

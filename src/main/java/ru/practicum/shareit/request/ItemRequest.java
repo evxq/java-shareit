@@ -1,7 +1,9 @@
 package ru.practicum.shareit.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.hibernate.Hibernate;
+import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -34,9 +36,12 @@ public class ItemRequest {
     @NotNull(message = "Не указано время создания запроса")
     private LocalDateTime created;
 
-    @Column(name = "requester_id")
     @NotNull(message = "Не указан инициатор запроса")
-    private Integer requesterId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JoinColumn(name = "requester_id")
+    @ToString.Exclude
+    private User requester;
 
     @Override
     public boolean equals(Object o) {

@@ -40,7 +40,8 @@ CREATE TABLE IF NOT EXISTS requests (
     description VARCHAR(512) NOT NULL,
     created TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     requester_id BIGINT NOT NULL,
-    CONSTRAINT pk_request PRIMARY KEY (id)
+    CONSTRAINT pk_request PRIMARY KEY (id),
+    CONSTRAINT fk_request_user FOREIGN KEY (requester_id) REFERENCES users (id)
 );
 
 CREATE TABLE IF NOT EXISTS comments (

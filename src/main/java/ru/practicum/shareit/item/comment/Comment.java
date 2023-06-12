@@ -29,14 +29,14 @@ public class Comment {
     private String text;                                    // @Column не указан, т.к названия поля и колонки совпадают
 
     @NotNull(message = "Не указан объект комментария")
-    @ManyToOne(fetch = FetchType.LAZY)                                      // связь когда множество данных объектов связаны с одним другим
+    @ManyToOne(fetch = FetchType.LAZY)                                      // связь когда множество this объектов связаны с одним объектом из данного поля
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "item_id")
     @ToString.Exclude
     private Item item;
 
     @NotNull(message = "Не указан автор комментария")
-    @ManyToOne(fetch = FetchType.LAZY)                                      // связь когда множество данных объектов связаны с одним другим
+    @ManyToOne(fetch = FetchType.LAZY)                                      // связь когда множество this объектов связаны с одним объектом из данного поля
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "author_id")
     @ToString.Exclude
