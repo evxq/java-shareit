@@ -25,7 +25,7 @@ public class BookingDtoJsonTest {
     private final LocalDateTime start = LocalDateTime.now().plusNanos(1);
     private final LocalDateTime end = LocalDateTime.now().plusNanos(2);
     private final User user = new User(1, "name", "email");
-    private final Item item = new Item(1, "name", "desc", user, true, 1);
+    private final Item item = new Item(1, "name", "desc", user, true);
 
     @SneakyThrows
     @Test

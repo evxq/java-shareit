@@ -2,7 +2,6 @@ package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.NotFoundException;
@@ -12,6 +11,7 @@ import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.utility.PageDefinition;
 
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
@@ -79,7 +79,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         userService.getUserById(userId);
         log.info("Пользователем id={} вызван список других запросов", userId);
 
-        return itemRequestRepository.findAllByRequesterIdNotOrderByCreatedDesc(userId, setPage(from, size))
+        return itemRequestRepository.findAllByRequesterIdNotOrderByCreatedDesc(userId, PageDefinition.definePage(from, size))
                 .stream()
                 .map(ItemRequestMapper::toItemRequestDto)
                 .peek(itemRequestDto -> itemRequestDto.setItems(getRequestItems(itemRequestDto.getId())))
@@ -91,10 +91,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
-    }
-
-    private static PageRequest setPage(int from, int size) {
-        return PageRequest.of(from > 0 ? from / size : 0, size);
     }
 
 }

@@ -51,7 +51,7 @@ public class ItemServiceImplTest {
     @BeforeEach
     void setup() {
         user = new User(1, "name", "e@mail.ya");
-        item = new Item(1, "name", "desc", true, 1);
+        item = new Item(1, "name", "desc", true);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class ItemServiceImplTest {
     void updateItem_returnUpdatedItem() {
         int itemId = 1;
         item.setOwner(user);
-        Item updItem = new Item(itemId, "newname", "newdesc", false, 1);
+        Item updItem = new Item(itemId, "newname", "newdesc", false);
         when(itemRepository.getReferenceById(itemId)).thenReturn(item);
         when(itemRepository.save(item)).thenReturn(item);
         ItemDto itemDto = ItemMapper.toItemDto(updItem);
