@@ -1,5 +1,7 @@
 package ru.practicum.shareit.item;
 
+import ru.practicum.shareit.request.ItemRequest;
+
 public class ItemMapper {
 
     public static ItemDto toItemDto(Item item) {
@@ -7,7 +9,9 @@ public class ItemMapper {
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
-                .available(item.getIsAvailable()).build();
+                .available(item.getIsAvailable())
+                .requestId(setRequestId(item))
+                .build();
     }
 
     public static Item toItem(ItemDto itemDto) {
@@ -15,7 +19,8 @@ public class ItemMapper {
                 itemDto.getId(),
                 itemDto.getName(),
                 itemDto.getDescription(),
-                itemDto.getAvailable());
+                itemDto.getAvailable()
+                );
     }
 
     public static ItemDtoBooking toItemDtoBooking(Item item) {
@@ -23,15 +28,17 @@ public class ItemMapper {
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
-                .available(item.getIsAvailable()).build();
+                .available(item.getIsAvailable())
+                .requestId(setRequestId(item))
+                .build();
     }
 
-    public static Item toItem(ItemDtoBooking itemDtoBooking) {
-        return new Item(
-                itemDtoBooking.getId(),
-                itemDtoBooking.getName(),
-                itemDtoBooking.getDescription(),
-                itemDtoBooking.getAvailable());
+    private static Integer setRequestId(Item item) {
+        ItemRequest request = item.getRequest();
+        if (request != null) {
+            return request.getId();
+        }
+        return null;
     }
 
 }

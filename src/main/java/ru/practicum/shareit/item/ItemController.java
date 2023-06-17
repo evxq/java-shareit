@@ -1,15 +1,20 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.comment.CommentDto;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
  * TODO Sprint add-controllers.
  */
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/items")
@@ -19,7 +24,7 @@ public class ItemController {
 
     @PostMapping
     public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                           @RequestBody ItemDto itemDto) {
+                           @Valid @RequestBody ItemDto itemDto) {
         return itemService.addItem(userId, itemDto);
     }
 
@@ -37,13 +42,17 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDtoBooking> getItemsForUser(@RequestHeader("X-Sharer-User-Id") Integer userId) {
-        return itemService.getItemsForUser(userId);
+    public List<ItemDtoBooking> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") Integer userId,
+                                                @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                                @Positive @RequestParam(defaultValue = "10") int size) {
+        return itemService.getItemsByOwner(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItemByText(@RequestParam String text) {
-        return itemService.searchItemByText(text);
+    public List<ItemDto> searchItemByText(@RequestParam String text,
+                                          @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                          @Positive @RequestParam(defaultValue = "10") int size) {
+        return itemService.searchItemByText(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

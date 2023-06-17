@@ -11,7 +11,9 @@ import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.comment.CommentMapper;
 import ru.practicum.shareit.item.comment.CommentRepository;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.utility.PageDefinition;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
 
     private final UserService userService;
+    private final ItemRequestRepository itemRequestRepository;
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
@@ -39,6 +42,9 @@ public class ItemServiceImpl implements ItemService {
         }
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(userService.getUserById(userId));
+        if (itemDto.getRequestId() != null) {
+            item.setRequest(itemRequestRepository.getReferenceById(itemDto.getRequestId()));
+        }
         Item newItem = itemRepository.save(item);
         log.info("Создана вещь id={}", newItem.getId());
 
@@ -63,6 +69,9 @@ public class ItemServiceImpl implements ItemService {
         }
         if (itemDto.getAvailable() != null) {
             existedItem.setIsAvailable(itemDto.getAvailable());
+        }
+        if (itemDto.getRequestId() != null) {
+            existedItem.setRequest(itemRequestRepository.getReferenceById(itemDto.getRequestId()));
         }
         Item updItem = itemRepository.save(existedItem);
         log.info("Обновлена вещь id={}", itemId);
@@ -93,10 +102,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoBooking> getItemsForUser(Integer userId) {
+    public List<ItemDtoBooking> getItemsByOwner(Integer userId, int from, int size) {
         log.info("Вызван список вещей для пользователя id ={}", userId);
 
-        return itemRepository.findAllByOwnerId(userId)
+        return itemRepository.findAllByOwnerId(userId, PageDefinition.definePage(from, size))
                 .stream()
                 .map(this::setCommentsToItem)
                 .map(this::setBookingsToItem)
@@ -141,14 +150,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItemByText(String text) {
+    public List<ItemDto> searchItemByText(String text, int from, int size) {
         if (text.isEmpty() || text.isBlank()) {
             log.warn("Вызван поиск вещей для пустой строки");
             return new ArrayList<>();
         }
         log.info("Вызван список вещей по строке поиска \"{}\"", text);
 
-        return itemRepository.findAllByTextContaining(text.toLowerCase())
+        return itemRepository.findAllByTextContaining(text.toLowerCase(), PageDefinition.definePage(from, size))
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
