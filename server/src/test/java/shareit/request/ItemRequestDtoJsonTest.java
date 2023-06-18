@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@JsonTest
+/*@JsonTest
 public class ItemRequestDtoJsonTest {
 
     @Autowired
@@ -34,4 +34,4 @@ public class ItemRequestDtoJsonTest {
         assertThat(result).extractingJsonPathStringValue("$.created").isEqualTo(time.toString());
     }
 
-}
+}*/

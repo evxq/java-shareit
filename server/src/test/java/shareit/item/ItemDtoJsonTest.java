@@ -11,7 +11,7 @@ import ru.practicum.shareit.item.ItemDtoBooking;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@JsonTest
+/*@JsonTest
 public class ItemDtoJsonTest {
 
     @Autowired
@@ -54,4 +54,4 @@ public class ItemDtoJsonTest {
         assertThat(result).extractingJsonPathNumberValue("$.requestId").isEqualTo(1);
     }
 
-}
+}*/

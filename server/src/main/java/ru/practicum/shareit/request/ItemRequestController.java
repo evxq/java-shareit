@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
@@ -39,8 +37,8 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                                               @PositiveOrZero @RequestParam(defaultValue = "0") int from,
-                                               @Positive @RequestParam(defaultValue = "10") int size) {
+                                               @RequestParam(defaultValue = "0") int from,
+                                               @RequestParam(defaultValue = "10") int size) {
         return itemRequestService.getAllRequests(userId, from, size);
     }
 

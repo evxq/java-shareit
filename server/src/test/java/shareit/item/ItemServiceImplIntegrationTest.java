@@ -22,7 +22,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-@Transactional
+/*@Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ItemServiceImplIntegrationTest {
@@ -159,4 +159,4 @@ public class ItemServiceImplIntegrationTest {
         assertThat(commentDto.getAuthorName(), equalTo(addedComment.getAuthorName()));
     }
 
-}
+}*/

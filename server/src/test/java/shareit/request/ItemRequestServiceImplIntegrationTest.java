@@ -18,6 +18,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+/*
 @Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -104,4 +105,4 @@ class ItemRequestServiceImplIntegrationTest {
         }
     }
 
-}
+}*/

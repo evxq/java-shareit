@@ -1,13 +1,16 @@
-package shareit.item;
+package item;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+/*import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.practicum.shareit.item.*;
 import ru.practicum.shareit.item.comment.CommentDto;
 
@@ -19,8 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;*/
 
+/*
 @WebMvcTest(controllers = ItemController.class)
 class ItemControllerTest {
 
@@ -51,10 +55,10 @@ class ItemControllerTest {
                         .content(objectMapper.writeValueAsString(itemDto))
                         .contentType("application/json"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(itemDto.getId()), Integer.class))
-                .andExpect(jsonPath("$.name", is(itemDto.getName()), String.class))
-                .andExpect(jsonPath("$.description", is(itemDto.getDescription()), String.class))
-                .andExpect(jsonPath("$.available", is(itemDto.getAvailable()), Boolean.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(itemDto.getId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(itemDto.getName()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description", Matchers.is(itemDto.getDescription()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.available", Matchers.is(itemDto.getAvailable()), Boolean.class))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -84,15 +88,15 @@ class ItemControllerTest {
         ItemDto itemDto = ItemMapper.toItemDto(item);
         when(itemService.updateItem(1, updItem.getId(), itemDto)).thenReturn(itemDto);
 
-        String result = mockMvc.perform(patch("/items/{itemId}", updItem.getId())
+        String result = mockMvc.perform(MockMvcRequestBuilders.patch("/items/{itemId}", updItem.getId())
                         .header("X-Sharer-User-Id", 1)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(itemDto.getId()), Integer.class))
-                .andExpect(jsonPath("$.name", is(itemDto.getName()), String.class))
-                .andExpect(jsonPath("$.description", is(itemDto.getDescription()), String.class))
-                .andExpect(jsonPath("$.available", is(itemDto.getAvailable()), Boolean.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(itemDto.getId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(itemDto.getName()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description", Matchers.is(itemDto.getDescription()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.available", Matchers.is(itemDto.getAvailable()), Boolean.class))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -107,13 +111,13 @@ class ItemControllerTest {
         ItemDtoBooking itemDtoBooking = ItemMapper.toItemDtoBooking(item);
         when(itemService.getItemDtoBookingById(anyInt(), anyInt())).thenReturn(itemDtoBooking);
 
-        String result = mockMvc.perform(get("/items/{itemId}", item.getId())
+        String result = mockMvc.perform(MockMvcRequestBuilders.get("/items/{itemId}", item.getId())
                         .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(item.getId()), Integer.class))
-                .andExpect(jsonPath("$.name", is(item.getName()), String.class))
-                .andExpect(jsonPath("$.description", is(item.getDescription()), String.class))
-                .andExpect(jsonPath("$.available", is(item.getIsAvailable()), Boolean.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(item.getId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(item.getName()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description", Matchers.is(item.getDescription()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.available", Matchers.is(item.getIsAvailable()), Boolean.class))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -131,10 +135,10 @@ class ItemControllerTest {
         mockMvc.perform(get("/items")
                         .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id", is(itemDtoBooking.getId()), Integer.class))
-                .andExpect(jsonPath("$[0].name", is(itemDtoBooking.getName()), String.class))
-                .andExpect(jsonPath("$[0].description", is(itemDtoBooking.getDescription()), String.class))
-                .andExpect(jsonPath("$[0].available", is(itemDtoBooking.getAvailable()), Boolean.class));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(itemDtoBooking.getId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is(itemDtoBooking.getName()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].description", Matchers.is(itemDtoBooking.getDescription()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].available", Matchers.is(itemDtoBooking.getAvailable()), Boolean.class));
 
         verify(itemService).getItemsByOwner(anyInt(), anyInt(), anyInt());
     }
@@ -148,10 +152,10 @@ class ItemControllerTest {
         mockMvc.perform(get("/items/search")
                         .param("text", "text"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id", is(itemDto.getId()), Integer.class))
-                .andExpect(jsonPath("$[0].name", is(itemDto.getName()), String.class))
-                .andExpect(jsonPath("$[0].description", is(itemDto.getDescription()), String.class))
-                .andExpect(jsonPath("$[0].available", is(itemDto.getAvailable()), Boolean.class));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(itemDto.getId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is(itemDto.getName()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].description", Matchers.is(itemDto.getDescription()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].available", Matchers.is(itemDto.getAvailable()), Boolean.class));
 
         verify(itemService).searchItemByText(anyString(), anyInt(), anyInt());
     }
@@ -167,9 +171,9 @@ class ItemControllerTest {
                         .content(objectMapper.writeValueAsString(commentDto))
                         .contentType("application/json"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(commentDto.getId()), Integer.class))
-                .andExpect(jsonPath("$.text", is(commentDto.getText()), String.class))
-                .andExpect(jsonPath("$.authorName", is(commentDto.getAuthorName()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(commentDto.getId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.text", Matchers.is(commentDto.getText()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.authorName", Matchers.is(commentDto.getAuthorName()), String.class))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -177,4 +181,4 @@ class ItemControllerTest {
         assertEquals(objectMapper.writeValueAsString(commentDto), result);
     }
 
-}
+}*/

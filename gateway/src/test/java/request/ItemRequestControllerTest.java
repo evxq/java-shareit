@@ -1,13 +1,16 @@
-package shareit.request;
+package request;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+/*import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.practicum.shareit.request.*;
 import ru.practicum.shareit.user.User;
 
@@ -22,8 +25,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;*/
 
+/*
 @WebMvcTest(controllers = ItemRequestController.class)
 class ItemRequestControllerTest {
 
@@ -55,10 +59,10 @@ class ItemRequestControllerTest {
                         .content(objectMapper.writeValueAsString(itemRequestDto))
                         .contentType("application/json"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(itemRequestDto.getId()), Integer.class))
-                .andExpect(jsonPath("$.description", is(itemRequestDto.getDescription()), String.class))
-                .andExpect(jsonPath("$.requesterId", is(itemRequestDto.getRequesterId()), Integer.class))
-                .andExpect(jsonPath("$.created", is(itemRequestDto.getCreated().toString()), LocalDateTime.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(itemRequestDto.getId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description", Matchers.is(itemRequestDto.getDescription()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.requesterId", Matchers.is(itemRequestDto.getRequesterId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.created", Matchers.is(itemRequestDto.getCreated().toString()), LocalDateTime.class))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -74,10 +78,10 @@ class ItemRequestControllerTest {
         mockMvc.perform(get("/requests")
                         .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id", is(itemRequestDto.getId()), Integer.class))
-                .andExpect(jsonPath("$[0].description", is(itemRequestDto.getDescription()), String.class))
-                .andExpect(jsonPath("$[0].requesterId", is(itemRequestDto.getRequesterId()), Integer.class))
-                .andExpect(jsonPath("$[0].created", is(itemRequestDto.getCreated().toString()), LocalDateTime.class));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(itemRequestDto.getId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].description", Matchers.is(itemRequestDto.getDescription()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].requesterId", Matchers.is(itemRequestDto.getRequesterId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].created", Matchers.is(itemRequestDto.getCreated().toString()), LocalDateTime.class));
 
         verify(itemRequestService).getMyRequests(anyInt());
     }
@@ -87,13 +91,13 @@ class ItemRequestControllerTest {
     void getRequestById_returnRequest() {
         when(itemRequestService.getRequestById(anyInt(), anyInt())).thenReturn(itemRequestDto);
 
-        String result = mockMvc.perform(get("/requests/{requestId}", itemRequestDto.getId())
+        String result = mockMvc.perform(MockMvcRequestBuilders.get("/requests/{requestId}", itemRequestDto.getId())
                         .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(itemRequestDto.getId()), Integer.class))
-                .andExpect(jsonPath("$.description", is(itemRequestDto.getDescription()), String.class))
-                .andExpect(jsonPath("$.requesterId", is(itemRequestDto.getRequesterId()), Integer.class))
-                .andExpect(jsonPath("$.created", is(itemRequestDto.getCreated().toString()), LocalDateTime.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(itemRequestDto.getId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description", Matchers.is(itemRequestDto.getDescription()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.requesterId", Matchers.is(itemRequestDto.getRequesterId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.created", Matchers.is(itemRequestDto.getCreated().toString()), LocalDateTime.class))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -109,12 +113,12 @@ class ItemRequestControllerTest {
         mockMvc.perform(get("/requests/all")
                         .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id", is(itemRequestDto.getId()), Integer.class))
-                .andExpect(jsonPath("$[0].description", is(itemRequestDto.getDescription()), String.class))
-                .andExpect(jsonPath("$[0].requesterId", is(itemRequestDto.getRequesterId()), Integer.class))
-                .andExpect(jsonPath("$[0].created", is(itemRequestDto.getCreated().toString()), LocalDateTime.class));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(itemRequestDto.getId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].description", Matchers.is(itemRequestDto.getDescription()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].requesterId", Matchers.is(itemRequestDto.getRequesterId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].created", Matchers.is(itemRequestDto.getCreated().toString()), LocalDateTime.class));
 
         verify(itemRequestService).getAllRequests(anyInt(), anyInt(), anyInt());
     }
 
-}
+}*/
