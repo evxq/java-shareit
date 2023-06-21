@@ -11,11 +11,8 @@ import ru.practicum.shareit.booking.dto.BookingState;
 import ru.practicum.shareit.exceptions.IllegalBookingStateException;
 
 import javax.validation.Valid;
-import javax.validation.ValidationException;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Validated

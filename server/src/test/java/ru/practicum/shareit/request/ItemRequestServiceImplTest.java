@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
@@ -18,10 +19,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ItemRequestServiceImplTest {
@@ -78,6 +80,16 @@ class ItemRequestServiceImplTest {
         ItemRequestDto newItemRequestDto = itemRequestService.getRequestById(1, 1);
 
         assertEquals(itemRequestDto, newItemRequestDto);
+    }
+
+    @Test
+    void getRequestById_returnException() {
+        when(itemRequestRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(
+                NotFoundException.class,
+                () -> itemRequestService.getRequestById(1, 1));
+        verify(itemRequestRepository, never()).save(any());
     }
 
     @Test

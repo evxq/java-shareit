@@ -168,6 +168,16 @@ class BookingServiceImplTest {
     }
 
     @Test
+    void getBookingById_wrongBooking_returnException() {
+        when(bookingRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        NotFoundException emptyBooking = assertThrows(
+                NotFoundException.class,
+                () -> bookingService.getBookingById(1, 1));
+        assertEquals("Такое бронирование не найдено", emptyBooking.getMessage());
+    }
+
+    @Test
     void getBookingsForUser_returnBookingsList() {
         int from = 0;
         int size = 5;

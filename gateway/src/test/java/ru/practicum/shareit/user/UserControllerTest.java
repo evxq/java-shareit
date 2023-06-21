@@ -38,17 +38,16 @@ class UserControllerTest {
     @MockBean
     private UserClient userClient;
 
-    private User user;
+    private UserDto userDto;
 
     @BeforeEach
     void setup() {
-        user = new User(1, "name", "e@mail.com");
+        userDto = new UserDto(1, "name", "e@mail.com");
     }
 
     @SneakyThrows
     @Test
     void createUser_returnUser() {
-        UserDto userDto = UserMapper.toUserDto(user);
         ResponseEntity<Object> entity = new ResponseEntity<>(userDto, HttpStatus.OK);
         when(userClient.createUser(userDto)).thenReturn(entity);
 
@@ -69,8 +68,7 @@ class UserControllerTest {
     @SneakyThrows
     @Test
     void createUser_userNotValid() {
-        user.setEmail("mail");
-        UserDto userDto = UserMapper.toUserDto(user);
+        userDto.setEmail("mail");
 
         mockMvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(userDto))
@@ -83,14 +81,13 @@ class UserControllerTest {
     @SneakyThrows
     @Test
     void updateUser_returnUser() {
-        User updUser = new User(1, "name2", "e@mail2.com");
-        UserDto userDto = UserMapper.toUserDto(updUser);
+        UserDto updUserDto = new UserDto(1, "name2", "e@mail2.com");
         ResponseEntity<Object> entity = new ResponseEntity<>(userDto, HttpStatus.OK);
         when(userClient.updateUser(any(), anyInt())).thenReturn(entity);
 
-        String result = mockMvc.perform(MockMvcRequestBuilders.patch("/users/{userId}", updUser.getId())
+        String result = mockMvc.perform(MockMvcRequestBuilders.patch("/users/{userId}", updUserDto.getId())
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(updUser)))
+                        .content(objectMapper.writeValueAsString(updUserDto)))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(userDto.getId()), Integer.class))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(userDto.getName()), String.class))
@@ -99,42 +96,41 @@ class UserControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        verify(userClient).updateUser(any(), eq(updUser.getId()));
+        verify(userClient).updateUser(any(), eq(updUserDto.getId()));
         assertEquals(objectMapper.writeValueAsString(userDto), result);
     }
 
     @SneakyThrows
     @Test
     void getUserById_returnUser() {
-        ResponseEntity<Object> entity = new ResponseEntity<>(user, HttpStatus.OK);
+        ResponseEntity<Object> entity = new ResponseEntity<>(userDto, HttpStatus.OK);
         when(userClient.getUserById(anyInt())).thenReturn(entity);
 
-        String result = mockMvc.perform(MockMvcRequestBuilders.get("/users/{userId}", user.getId()))
+        String result = mockMvc.perform(MockMvcRequestBuilders.get("/users/{userId}", userDto.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(user.getId()), Integer.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(user.getName()), String.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.email", Matchers.is(user.getEmail()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(userDto.getId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(userDto.getName()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email", Matchers.is(userDto.getEmail()), String.class))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        verify(userClient).getUserById(user.getId());
-        assertEquals(objectMapper.writeValueAsString(user), result);
+        verify(userClient).getUserById(userDto.getId());
+        assertEquals(objectMapper.writeValueAsString(userDto), result);
     }
 
     @SneakyThrows
     @Test
     void getAllUsers_returnList() {
-        UserDto userDto = UserMapper.toUserDto(user);
         ResponseEntity<Object> entity = new ResponseEntity<>(List.of(userDto), HttpStatus.OK);
         when(userClient.getAllUsers()).thenReturn(entity);
 
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(user.getId()), Integer.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is(user.getName()), String.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].email", Matchers.is(user.getEmail()), String.class));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(userDto.getId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is(userDto.getName()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].email", Matchers.is(userDto.getEmail()), String.class));
 
         verify(userClient).getAllUsers();
     }

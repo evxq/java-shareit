@@ -14,7 +14,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import ru.practicum.shareit.item.comment.CommentDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,17 +37,16 @@ class ItemControllerTest {
     @MockBean
     private ItemClient itemClient;
 
-    private Item item;
+    private ItemDto itemDto;
 
     @BeforeEach
     void setup() {
-        item = new Item(1, "name", "desc", true);
+        itemDto = ItemDto.builder().id(1).name("name").description("desc").available(true).build();
     }
 
     @SneakyThrows
     @Test
     void addItem_returnItem() {
-        ItemDto itemDto = ItemMapper.toItemDto(item);
         ResponseEntity<Object> entity = new ResponseEntity<>(itemDto, HttpStatus.OK);
         when(itemClient.addItem(1, itemDto)).thenReturn(entity);
 
@@ -71,8 +69,7 @@ class ItemControllerTest {
     @SneakyThrows
     @Test
     void addItem_itemNotValid() {
-        item.setName("");
-        ItemDto itemDto = ItemMapper.toItemDto(item);
+        itemDto.setName("");
 
         mockMvc.perform(post("/items")
                         .header("X-Sharer-User-Id", 1)
@@ -86,12 +83,11 @@ class ItemControllerTest {
     @SneakyThrows
     @Test
     void updateItem_returnItemDto() {
-        Item updItem = new Item(1, "name2", "2", false);
-        ItemDto itemDto = ItemMapper.toItemDto(item);
+        ItemDto updItemDto = ItemDto.builder().id(1).name("name2").description("2").available(false).build();
         ResponseEntity<Object> entity = new ResponseEntity<>(itemDto, HttpStatus.OK);
-        when(itemClient.updateItem(1, updItem.getId(), itemDto)).thenReturn(entity);
+        when(itemClient.updateItem(1, updItemDto.getId(), itemDto)).thenReturn(entity);
 
-        String result = mockMvc.perform(MockMvcRequestBuilders.patch("/items/{itemId}", updItem.getId())
+        String result = mockMvc.perform(MockMvcRequestBuilders.patch("/items/{itemId}", updItemDto.getId())
                         .header("X-Sharer-User-Id", 1)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemDto)))
@@ -104,46 +100,44 @@ class ItemControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        verify(itemClient).updateItem(1, updItem.getId(), itemDto);
+        verify(itemClient).updateItem(1, updItemDto.getId(), itemDto);
         assertEquals(objectMapper.writeValueAsString(itemDto), result);
     }
 
     @SneakyThrows
     @Test
     void getItemById_returnItemDtoBooking() {
-        ItemDtoBooking itemDtoBooking = ItemMapper.toItemDtoBooking(item);
-        ResponseEntity<Object> entity = new ResponseEntity<>(itemDtoBooking, HttpStatus.OK);
+        ResponseEntity<Object> entity = new ResponseEntity<>(itemDto, HttpStatus.OK);
         when(itemClient.getItemById(anyInt(), anyInt())).thenReturn(entity);
 
-        String result = mockMvc.perform(MockMvcRequestBuilders.get("/items/{itemId}", item.getId())
+        String result = mockMvc.perform(MockMvcRequestBuilders.get("/items/{itemId}", itemDto.getId())
                         .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(item.getId()), Integer.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(item.getName()), String.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.description", Matchers.is(item.getDescription()), String.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.available", Matchers.is(item.getIsAvailable()), Boolean.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(itemDto.getId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(itemDto.getName()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description", Matchers.is(itemDto.getDescription()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.available", Matchers.is(itemDto.getAvailable()), Boolean.class))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
         verify(itemClient).getItemById(anyInt(), anyInt());
-        assertEquals(objectMapper.writeValueAsString(itemDtoBooking), result);
+        assertEquals(objectMapper.writeValueAsString(itemDto), result);
     }
 
     @SneakyThrows
     @Test
     void getItemsByOwner_returnItemDtoBookingList() {
-        ItemDtoBooking itemDtoBooking = ItemMapper.toItemDtoBooking(item);
-        ResponseEntity<Object> entity = new ResponseEntity<>(List.of(itemDtoBooking), HttpStatus.OK);
+        ResponseEntity<Object> entity = new ResponseEntity<>(List.of(itemDto), HttpStatus.OK);
         when(itemClient.getItemsByOwner(anyLong(), anyInt(), anyInt())).thenReturn(entity);
 
         mockMvc.perform(get("/items")
                         .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(itemDtoBooking.getId()), Integer.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is(itemDtoBooking.getName()), String.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].description", Matchers.is(itemDtoBooking.getDescription()), String.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].available", Matchers.is(itemDtoBooking.getAvailable()), Boolean.class));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(itemDto.getId()), Integer.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is(itemDto.getName()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].description", Matchers.is(itemDto.getDescription()), String.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].available", Matchers.is(itemDto.getAvailable()), Boolean.class));
 
         verify(itemClient).getItemsByOwner(anyLong(), anyInt(), anyInt());
     }
@@ -151,7 +145,6 @@ class ItemControllerTest {
     @SneakyThrows
     @Test
     void searchItemByText_returnItemDtoList() {
-        ItemDto itemDto = ItemMapper.toItemDto(item);
         ResponseEntity<Object> entity = new ResponseEntity<>(List.of(itemDto), HttpStatus.OK);
         when(itemClient.searchItemByText(anyString(), anyInt(), anyInt())).thenReturn(entity);
 

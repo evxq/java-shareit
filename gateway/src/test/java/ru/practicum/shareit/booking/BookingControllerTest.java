@@ -15,8 +15,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.practicum.shareit.booking.dto.BookItemRequestDto;
-import ru.practicum.shareit.item.Item;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.item.ItemDto;
+import ru.practicum.shareit.user.UserDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,21 +43,19 @@ class BookingControllerTest {
     @MockBean
     private BookingClient bookingClient;
 
-    private Booking booking;
     private BookingDto bookingDto;
     private BookItemRequestDto bookItemRequestDto;
 
     @BeforeEach
     void setup() {
-        User user = new User(1, "name", "e@mail.ya");
-        Item item = new Item(1, "name", "desc", true);
-        booking = new Booking(1,
+        UserDto userDto = new UserDto(1, "name", "e@mail.com");
+        ItemDto itemDto = ItemDto.builder().id(1).name("name").description("desc").available(true).build();
+        bookingDto = new BookingDto(1,
                 LocalDateTime.now().plusHours(1).plusNanos(1),
                 LocalDateTime.now().plusHours(2).plusNanos(1),
-                item, user, BookingStatus.WAITING);
-        bookingDto = BookingMapper.toBookingDto(booking);
+                itemDto, userDto, BookingDto.BookingStatus.WAITING);
         bookItemRequestDto = new BookItemRequestDto(
-                item.getId(),
+                itemDto.getId(),
                 LocalDateTime.now().plusHours(1).plusNanos(1),
                 LocalDateTime.now().plusHours(2).plusNanos(1));
     }
@@ -85,20 +84,18 @@ class BookingControllerTest {
     @SneakyThrows
     @Test
     void responseToBooking_returnBooking() {
-        bookingDto.setStatus(BookingStatus.APPROVED);
+        bookingDto.setStatus(BookingDto.BookingStatus.APPROVED);
         ResponseEntity<Object> entity = new ResponseEntity<>(bookingDto, HttpStatus.OK);
         when(bookingClient.responseToBooking(anyLong(), anyLong(), anyBoolean())).thenReturn(entity);
 
-        String result = mockMvc.perform(MockMvcRequestBuilders.patch("/bookings/{bookingId}", booking.getId())
+        String result = mockMvc.perform(MockMvcRequestBuilders.patch("/bookings/{bookingId}", bookingDto.getId())
                         .header("X-Sharer-User-Id", 1)
                         .param("approved", "true"))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(bookingDto.getId()), Integer.class))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.start", Matchers.is(bookingDto.getStart().toString()), LocalDateTime.class))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.end", Matchers.is(bookingDto.getEnd().toString()), LocalDateTime.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.item", Matchers.is(bookingDto.getItem()), Item.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.booker", Matchers.is(bookingDto.getBooker()), User.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.status", Matchers.is(bookingDto.getStatus().toString()), BookingStatus.class))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status", Matchers.is(bookingDto.getStatus().toString()), BookingDto.BookingStatus.class))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -112,17 +109,20 @@ class BookingControllerTest {
         ResponseEntity<Object> entity = new ResponseEntity<>(bookingDto, HttpStatus.OK);
         when(bookingClient.getBooking(anyLong(), anyLong())).thenReturn(entity);
 
-        String result = mockMvc.perform(MockMvcRequestBuilders.get("/bookings/{bookingId}", booking.getId())
+        String result = mockMvc.perform(MockMvcRequestBuilders.get("/bookings/{bookingId}", bookingDto.getId())
                         .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(bookingDto.getId()), Integer.class))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.start", Matchers.is(bookingDto.getStart().toString()), LocalDateTime.class))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.end", Matchers.is(bookingDto.getEnd().toString()), LocalDateTime.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.item", Matchers.is(bookingDto.getItem()), Item.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.booker", Matchers.is(bookingDto.getBooker()), User.class))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
+
+        System.out.println();
+        System.out.println(result);
+        System.out.println();
+
 
         assertEquals(objectMapper.writeValueAsString(bookingDto), result);
     }
@@ -138,9 +138,7 @@ class BookingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(bookingDto.getId()), Integer.class))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].start", Matchers.is(bookingDto.getStart().toString()), LocalDateTime.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].end", Matchers.is(bookingDto.getEnd().toString()), LocalDateTime.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].item", Matchers.is(bookingDto.getItem()), Item.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].booker", Matchers.is(bookingDto.getBooker()), User.class));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].end", Matchers.is(bookingDto.getEnd().toString()), LocalDateTime.class));
 
         verify(bookingClient).getBookings(anyLong(), any(), anyInt(), anyInt());
     }
@@ -156,9 +154,7 @@ class BookingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(bookingDto.getId()), Integer.class))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].start", Matchers.is(bookingDto.getStart().toString()), LocalDateTime.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].end", Matchers.is(bookingDto.getEnd().toString()), LocalDateTime.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].item", Matchers.is(bookingDto.getItem()), Item.class))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].booker", Matchers.is(bookingDto.getBooker()), User.class));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].end", Matchers.is(bookingDto.getEnd().toString()), LocalDateTime.class));
 
         verify(bookingClient).getBookingsForOwner(anyLong(), any(), anyInt(), anyInt());
     }

@@ -14,7 +14,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,9 +44,7 @@ class ItemRequestControllerTest {
 
     @BeforeEach
     void setUp() {
-        User user = new User(1, "name", "e@mail.ya");
-        ItemRequest itemRequest = new ItemRequest(1, "request", LocalDateTime.now().withNano(1), user);
-        itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
+        itemRequestDto = ItemRequestDto.builder().id(1).description("request").created(LocalDateTime.now().withNano(1)).build();
     }
 
     @SneakyThrows

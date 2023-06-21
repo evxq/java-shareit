@@ -21,18 +21,6 @@ public class ErrorHandler {
         return new ErrorResponse(v.getMessage());
     }
 
-    @ExceptionHandler                                                               // 404
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFoundError(final NotFoundException n) {
-        return new ErrorResponse(n.getMessage());
-    }
-
-    @ExceptionHandler                                                               // 409
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleNotFoundError(final UserAlreadyExistException n) {
-        return new ErrorResponse(n.getMessage());
-    }
-
     @ExceptionHandler                                                               // 500
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleException(final Exception e) {
