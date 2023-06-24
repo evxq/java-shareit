@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.List;
  * TODO Sprint add-bookings.
  */
 
-@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/bookings")
@@ -42,10 +40,6 @@ public class BookingController {
                                                @RequestParam(defaultValue = "ALL") String state,
                                                @RequestParam(defaultValue = "0") int from,
                                                @RequestParam(defaultValue = "10") int size) {
-
-        /*List<BookingDto> list = bookingService.getBookingsForUser(bookerId, state, from, size).stream()
-                .sorted(Comparator.comparing(BookingDto::getStart).reversed())
-                .collect(Collectors.toList());*/
         return bookingService.getBookingsForUser(bookerId, state, from, size);
     }
 

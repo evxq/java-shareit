@@ -6,8 +6,6 @@ import org.hibernate.Hibernate;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -29,14 +27,10 @@ public class ItemRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull(message = "Не указано описание запроса")
-    @NotBlank(message = "Не указано описание запроса")
     private String description;
 
-    @NotNull(message = "Не указано время создания запроса")
     private LocalDateTime created;
 
-    @NotNull(message = "Не указан инициатор запроса")
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "requester_id")

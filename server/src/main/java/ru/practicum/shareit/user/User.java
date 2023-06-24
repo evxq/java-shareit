@@ -4,8 +4,6 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 /**
@@ -24,11 +22,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private String name;                                        // @Column не указан
-
-    @NotNull(message = "e-mail должен быть заполнен")
-    @Email(message = "e-mail некорректен")
     private String email;                                       // @Column не указан
 
     @Override

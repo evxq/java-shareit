@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.ItemDto;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
@@ -13,7 +12,6 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.utility.PageDefinition;
 
-import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,15 +31,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         User user = userService.getUserById(userId);
         itemRequestDto.setRequesterId(userId);
         itemRequestDto.setCreated(LocalDateTime.now());
-        ItemRequest savedRequest;
-        try {
-            ItemRequest request = ItemRequestMapper.toItemRequest(itemRequestDto);
-            request.setRequester(user);
-            savedRequest = itemRequestRepository.save(request);
-        } catch (ConstraintViolationException e) {
-            log.info("Введены некорректные данные для создания запроса");
-            throw new ValidationException("Некорректные данные для создания запроса");
-        }
+        ItemRequest request = ItemRequestMapper.toItemRequest(itemRequestDto);
+        request.setRequester(user);
+        ItemRequest savedRequest = itemRequestRepository.save(request);
         log.info("Создан запрос id={}", savedRequest.getId());
 
         return ItemRequestMapper.toItemRequestDto(savedRequest);
